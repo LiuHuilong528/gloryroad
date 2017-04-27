@@ -47,6 +47,31 @@ Function的arguments属性中大的callee,指向拥有这个 arguments 对象的
 注意：使用递归时最好使用第二种方式；
 
 
-`caller`保存对调用当前函数的应用;
+`caller`保存对调用当前函数的函数的引用;
 
-Function的prototype，ECMAScript引用类型，prototype是保存他们实例方法的真正所在，prototype是不可枚举，不能用`for in `迭代,
+`apply()` 的参数是参数数组(arguments也可以)，参数可以变化
+`call()` 函数的参数会直接传递给函数；
+
+		function sum(num1,num2){
+			return num1+num2;
+		}
+		function callSum(num1,num2){
+			return sum.call(this,num1,num2);
+		}
+
+`callSum()`必须明确的参数的传入；
+
+Function的prototype，ECMAScript引用类型，prototype是保存他们实例方法的真正所在，prototype是不可枚举，不能用`for in `迭代；
+每个`funciton`都有2个函数：`apply()` 和 `call()`;用于在特定的作用域中调用函数；
+
+
+`bind()` 函数：
+
+		var o = { color: "blue" };
+		function sayColor(){
+			alert(this.color);
+		}
+		var objectSayColor = sayColor.bind(o);
+		objectSayColor(); //blue
+		//objectSayColor() = o.sayColor();
+
