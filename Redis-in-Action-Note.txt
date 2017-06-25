@@ -1,0 +1,147 @@
+redis-server redis.conf  --启动redis
+	默认端口：6379
+	持久化文件目录： ./
+
+Redis 五种数据结构：
+STRING	LIST	SET	HASH	ZSET
+
+Redis Command -- redis 命令
+String	command
+
+set	 key 	value 
+get	 key
+del	 key
+
+---Redis字符串自增和自减命令
+incr		key	
+decr		key
+incrby		key	amount
+decrby		key	amount
+incrbyfloat	key	amount
+
+
+---Redis处理字符串命令
+append	 key 	value		-字符串尾部添加
+getrange key	start	end（start 和 end 包括在内）
+setrange key	offset	value 	-特定位置赋值
+getbit	 key	offset		-返回二进制位串特定位置的二进制值
+setbit	 key	offset	value	-特定位置的二进制位串赋值
+bitcount key	[start end]	-统计二进制位串值为1的数字
+bitop	 operation dest-key key [key1...]	-对二进制位串执行 AND OR XOR NOT位运算并保存在的des-key
+
+
+List	command
+
+--- List 常用命令
+rpush	key  value ..... -可以一次插入多个值
+lpush	key  value ..... -可以一次插入多个值
+rpop	key  -移除并返回列表最右端的值
+lpop	key  -移除并返回列表最左端的值
+lindex	key  offset  -返回下标时offset的值
+lrange  key  start  end  -返回start到end（包括end）的元素
+ltrim	key  start  en   -返回start到end（包括end）的元素，其他移除
+
+--- 阻塞式列表命令和列表移动命令
+blpop		key[key1...] timeout  -从第一个非空列表弹出最左端元素或在timeout之前阻塞等待可义弹出的元素
+brpop		key[key1...] timeout  -同 blpop 方向相反
+rpoplpush	source-key dest-key  -将source中的最右端元素弹出，插入dest中的最左端
+brpoplpush	source-key dest-key time-out	-阻塞的 rpoplpush
+
+
+
+Set	command
+--常用命令
+sadd		set-key item	集合中增加元素	
+srem		key item [item] 删除元素（一个或多个）  
+smembers	set-key		集合中所有的元素
+sismember	set-key	item	元素是否存在于集合中
+scard		key 集合的元素的数量
+srandmember	key [count]  	返回随机元素：count正数返回元素不重复，count负数则重复
+spop		key -随机删除元素，返回被删除元素
+smov		source-key dest-key item --source中存在item则将item删移动到dest中;成功返回1,失败返回0
+
+
+--处理组合和多个集合命令
+sdiff		key [key1...]		存在于第一个集合不存在于其他集合,差集
+sdiffstore	source-key dest-key key [key1...] 存储差集
+sinter		key [key1...]		交集操作
+sinterstore	source-key dest-key key [key1...] 存储交集
+sunion		key [key1...]		并集
+sunionstore	source-key dest-key key [key1...] 存储并集
+
+
+Hash	command
+
+-- 常见命令
+hset	hash-key	sub-key	value	单个增加
+hmset	hash-key key value [key value ....] 多个增加
+hget	hash-key	sub-key		单个获取hash中的key的值
+hmget	hash-key key [key1]		获取多个hash中的key的值
+hdel	hash-key	key [ key1...]	删除（单个和多个都可以）
+hlen	hash-key			长度 
+
+-- 高级特性
+hexists 	hash-key key 	给那定接键是否存在hash中
+hkeys		hash-key 	hash中所有的key
+hvals		hash-key	hash中所有的值
+hgetall		hash-key	所有键值对
+hincrby 	hash-key	key increment	key中的值加上整数increment
+hincrebyfloat	hash-key	key increment	key中的值加上浮点数increment
+
+
+
+Zset	command
+有序集合——键称作成员(member)，且不相同;值称作分值(score)，分值必须是浮点数
+有序集合既可以按成员访问，也可以按分值访问。
+
+--常见命令
+zadd		zset-key score	member [score1 member1 ....]  增加	
+zrem		zset-key member [member1]  删除
+zacard		zset-key  - 有序集合的元素数量
+zincrby		zset-key increment member  -将member成员的score加上 incremenet
+zcount		zset-key min max  -返回分值min——max之间的元素数量
+zrank		zset-key member	  -返回member的排名（升序）
+zscore		zset-key member   -返回member的分值	
+zarange		zset-key start end [WITHSCORES] -返回排名start--end之间的成员，withscores则分值也会返回
+zrevrank	zset-key member    -返回member的排名（降序）
+zrevrange	zset-key start stop [WITHSCORES] -返回排在在start--stop中的成员，也可带分值
+zrangebyscore	zset-key min max [WITHSCORES] [LIMIT offset count] -返回min--max之间所有的成员(分值升序)
+zrevrangebyscore zset-key  min max [WITHSCORES] [LIMIT offset count] -返回min--max之间所有的成员（分值降序）
+zremrangebyrank		zset-key start stop 
+zremrangebyscore	zset-key min max
+zinterstore		dest-key key-count key [key1...] [WEIGHTS weight [weight...]] [AGGREGATE SUM|MIN|MAX]	-对给定的有序集合执行集合的交集
+zunionstore		dest-key key-count key [key1...] [WEIGHTS weight [weight...]] [AGGREGATE SUM|MIN|MAX]	-对给定的有序集合执行集合的并集
+##### zinterstore zunionstore 可以接受集合作为输入，set的分值全部被当作1的有序集合处理
+
+
+Redis Pushlish Subscribe -- 订阅和发布
+subcribe channel [channel1 ...] 订阅
+unsubcribe channel [channel1...] 退订
+publsih channel message  -- 发消息
+psubscribe pattern [pattern1...] 订阅和模式匹配的频道
+punsubscribe pattern [pattern1...] 退订
+
+其他命令：
+sort source-key [BY pattern] [LIMMIT offset count] [GET pattern [GET pattern].....] [ASC|DESC] [ALPHA] [STORE dest-key] 
+--根据特定的选项，将输入的列表、集合、散列和有序集合排序，返回或者存储排序结果。
+
+Redis 事务命令：
+WATCH MULTI EXEC UNWATCH 
+Redis接到 MULTI命令后，将之后的命令放入队列中，直到接收到 EXEC 命令，在不被其他客户端中断的情况下将命令按接收顺序执行;
+
+
+Redis过期时间处理命令：
+persist		key
+ttl		key
+expire		key	seconds
+expireat	key	timestamp
+pttl		key	
+pexpire		key	milliseconds
+pexpireat	key	timestamp-milliseconds
+
+
+
+
+
+redis-cli -redis客户端：
+select DBName(0-15)
