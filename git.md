@@ -29,5 +29,7 @@
 
     > `git branch branchname`  `git checkout branchname` 同上一样的效果
     
-*   `git merge --no-ff branchA` --合并分支;将branchA合并到
+*   `git merge --no-ff branchA` --合并分支;将branchA合并到主干
 
+*   `git log --graph` -- 以图表形式查看分支
+*   `git reset `  -- 回溯历史版本
