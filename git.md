@@ -1,5 +1,6 @@
-#Git
-##git 链接 github 步骤：
+# Git
+
+## git 链接 github 步骤：
 
     1.创建 SSH Key: `ssh-keygen -t rsa -C "email"` 生成公私密钥
     2.在github上添加公钥，方便私钥验证；`cat ~/.ssh/id_rsa.pub` 查看密钥
