@@ -1,5 +1,6 @@
-#Git
-##git 链接 github 步骤：
+# Git
+
+## git 链接 github 步骤：
 
     1.创建 SSH Key: `ssh-keygen -t rsa -C "email"` 生成公私密钥
     2.在github上添加公钥，方便私钥验证；`cat ~/.ssh/id_rsa.pub` 查看密钥
@@ -18,6 +19,7 @@
 *   `git init ` - 本地初始化仓库
 *   `git log --pretty=short` -美化输出格式
 *   `git log -p <fileName>`  - 提交前后差别
+*   `git reflog ` --查看当前仓库操作日志
 *   `git diff` --查看工作树、暂存区、最新提交之间的差别
     > `git diff` 工作树和暂存区差别
     
@@ -32,4 +34,29 @@
 *   `git merge --no-ff branchA` --合并分支;将branchA合并到主干
 
 *   `git log --graph` -- 以图表形式查看分支
-*   `git reset `  -- 回溯历史版本
+*   `git reset --hard hashvalue`  -- 回溯历史版本
+*   `git commit --amend`  -- 修改提交信息记录
+*   `git commit -am ` --先add 后commit 2步
+*   `git rebase -i  HEAD-2` -- 合并提交历史，实现完美提交
+    > pick 7a34294 Add feature-C
+    
+    > pick 6fba227 Fix typo
+    
+    修改成如下，则 `6fba227` 部分的提交会被合并到 前一个提交；
+    > pick 7a34294 Add feature-C
+    
+    > fixup 6fba227 Fix typ
+
+
+## git 推送至远程仓库
+
+*   `git remote add  origin git@github.com:github-name/git-tutorial.git` -- 将github上的项目设置为本地库的远程库。
+
+*   `git push` --推送至远程仓库
+*   `git push -u origin master` -- `-u`参数将远程仓库的master分支设置为本地仓库的上游，方便以后从 master 分支获取内容；
+
+
+## git 从远程仓库获取内容
+
+*   `git clone ` -- 获取主干
+*   `git checkout -b branchname romotebranchname` -- 以远程的分支为基础创建新的本地分支
