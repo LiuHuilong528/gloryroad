@@ -60,3 +60,14 @@
 
 *   `git clone ` -- 获取主干
 *   `git checkout -b branchname romotebranchname` -- 以远程的分支为基础创建新的本地分支
+*   `git pull`-- git 最新内容
+
+
+
+
+
+## 消除 提交代码总是输入用户和密码,换种协议：不用 https 使用 ssh
+
+*   `git remote rm origin ` -- 删除远程项目的别称“origin”
+*   `git remote add origin git@github.com:githubAccount/Repository.git` --将仓库的协议更改为ssh，不是`https://github.com/githubAccount/Repository.git`(这是https协议的)
+*   `git push -u origin master` --向远程仓库提交代码，不用密码了
