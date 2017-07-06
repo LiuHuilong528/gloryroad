@@ -2,7 +2,7 @@
 
 ## git 链接 github 步骤：
 
-    1.创建 SSH Key: `ssh-keygen -t rsa -C "email"` 生成公私密钥
+    1.创建 SSH Key: ` ssh-keygen -t rsa -C "email" ` 生成公私密钥
     2.在github上添加公钥，方便私钥验证；`cat ~/.ssh/id_rsa.pub` 查看密钥
     3.ssh 连接 github ：`ssh -T git@github.com`
 
@@ -11,8 +11,9 @@
 
 *   `git clone url`  - 从github下载代码到本地
 *   `git status`  -现在git状态:新增、修改、删除等
-*  `git add filename` -将文件添加如git 版本管理中(暂存区).
-    _注意_：此命令并不提交代码到仓库，只是将之前在版本管理之外的文件，纳入版本管理之中
+*   `git add filename` -将文件添加如git 版本管理中(暂存区)。<br/>注意:此命令并不提交代码到仓库，只是将之前在版本管理之外的文件，纳入版本管理之中
+    
+    
 *   `git commit -m "comment"` -提交（暂存区）代码至(本地)仓库
 *   `git log` -查看git提交日志
 *   `git push`  - 更新 GitHub上仓库 
@@ -26,7 +27,7 @@
     > `git diff HEAD` 工作树和最新提交差别
  
 *   `git branch` -显示分支
-*  创建、切换分支
+*   创建、切换分支
     > `git checkout -b branchname` --创建分支 并切换到创建的分支下
 
     > `git branch branchname`  `git checkout branchname` 同上一样的效果
@@ -38,11 +39,13 @@
 *   `git commit --amend`  -- 修改提交信息记录
 *   `git commit -am ` --先add 后commit 2步
 *   `git rebase -i  HEAD-2` -- 合并提交历史，实现完美提交
+    
     > pick 7a34294 Add feature-C
     
     > pick 6fba227 Fix typo
     
     修改成如下，则 `6fba227` 部分的提交会被合并到 前一个提交；
+    
     > pick 7a34294 Add feature-C
     
     > fixup 6fba227 Fix typ
