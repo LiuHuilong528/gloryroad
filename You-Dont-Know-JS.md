@@ -55,7 +55,7 @@ RHS —— 赋值的源（RHS），单纯的获取变量值。
 
 立即执行函数也能仅仅是为了传递参数：
 
-``` javascript 
+``` javascript
     var a = 2;
 
     (function IIFE( global ){
@@ -73,7 +73,7 @@ RHS —— 赋值的源（RHS），单纯的获取变量值。
 
 立即执行的另一种变种：
 
-``` javascript 
+``` javascript
     var a = 2;
 
     (function IIFE( def ){
@@ -90,7 +90,7 @@ RHS —— 赋值的源（RHS），单纯的获取变量值。
 
 `def` 函数在代码后半部分定义,然后作为参数被传给代码前半部分的 `IIFE` 函数。最后参数 `def` (函数)被调用，并将 `window` 作为 `global` 参数传入！
 
-#### 内联函数表达式 
+#### 内联函数表达式
 内联函数表达式 如下：
 
 ``` javascript
@@ -105,7 +105,7 @@ RHS —— 赋值的源（RHS），单纯的获取变量值。
 ### 块作用域
 JS不支持块作用域；
 
-``` javascript 
+``` javascript
 for (var i=0; i<10; i++) {
 	console.log( i );
 }
@@ -116,7 +116,7 @@ for (var i=0; i<10; i++) {
 
 `let` 可以实现块作用域，它总是将变量声明附着在所在的块(通常是`{.....}`)的作用域中。`let` 不会讲变量提升：
 
-``` javascript 
+``` javascript
 {
     console.log(bar);//ReferenceError!
     console.log(foo); // 3 这里是变量提升
