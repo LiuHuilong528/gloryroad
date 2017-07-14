@@ -1,4 +1,5 @@
 # You-Dont-Know-JS
+# 作用域与闭包
 ## 编译器术语
 
 LHS —— 赋值的目标（LHS），取得值赋给变量；   
@@ -188,4 +189,171 @@ foo = function() {
 };
 ```
 ## 作用域闭包
-** 闭包 ** 就是函数能够记住并访问它的词法作用域，即使当这个函数在它的词法作用域之外执行时。
+**闭包** 就是函数能够记住并访问它的词法作用域，即使当这个函数在它的词法作用域之外执行时。
+
+* 内部函数只要被**传递到词法作用域外**，它都将维护一个指向它最开始被声明时的作用域的引用，一旦被执行，闭包就会被行使。
+
+ ### 模块化
+ 
+ ``` javascript
+ /** 模块化的JS **/
+function CoolModule() {
+	var something = "cool";
+	var another = [1, 2, 3];
+
+	function doSomething() {
+		console.log( something );
+	}
+
+	function doAnother() {
+		console.log( another.join( " ! " ) );
+	}
+
+	return {
+		doSomething: doSomething,
+		doAnother: doAnother
+	};
+}
+
+var foo = CoolModule();
+
+foo.doSomething(); // cool
+foo.doAnother(); // 1 ! 2 ! 3
+ ```
+ 
+ 行使模块2个必要条件：
+ 1. 要有外部的外围函数，且至少被调用一次；
+ 2. 外围函数至少返回一个内部函数，这样才可以访问私有作用域的变量；
+ 
+ 单利模块；
+ ``` javascript
+ var foo = (function CoolModule() {
+	var something = "cool";
+	var another = [1, 2, 3];
+
+	function doSomething() {
+		console.log( something );
+	}
+
+	function doAnother() {
+		console.log( another.join( " ! " ) );
+	}
+
+	return {
+		doSomething: doSomething,
+		doAnother: doAnother
+	};
+})();
+
+foo.doSomething(); // cool
+foo.doAnother(); // 1 ! 2 ! 3
+
+// 这里*立即执行*只能这使用，不能用 `CoolModule()`
+ ```
+ ## 附录A 动态作用域
+ **动态作用域**不关心函数和作用域在哪里和如何被声明，而是关心**它们是从何处被调用的**。    
+ JavaScript**实际上没有动态作用域**。有词法作用域，但是 `this` 机制和动态作用域类似。
+ 
+ ``` javascript
+ function foo() {
+	console.log( a ); // 3  (不是 2!)
+}
+
+function bar() {
+	var a = 3;
+	foo();
+}
+
+var a = 2;
+
+bar();//
+/** 运行结果 **/
+2           //如果是动态作用域则此是 3 ，说明js无动态作用域
+undefined   
+ ```
+ 
+ 
+ 词法作用域和动态作用域差异：**词法作用域是编写时的，而动态作用域（和 `this`）是运行时的**。词法作用域关心的是 函数在何处被声明，但是动态作用域关心的是函数 从何处 被调用。
+ 
+ # `this` 与对象原型
+ 
+ ## `this` 
+ 
+ 1. 函数中的this 并不是指向函数自己。    
+
+    ``` javascript 
+    function foo(num) {
+        console.log( "foo: " + num );
+
+        // 追踪 `foo` 被调用了多少次
+        this.count++; //
+    }
+
+    foo.count = 0;//foo函数中的count 并没有绑定到foo.count 上，函数中的this不是指向函数自身
+
+    var i;
+
+    for (i=0; i<10; i++) {
+        if (i > 5) {
+            foo( i );
+        }
+    }
+    // foo: 6
+    // foo: 7
+    // foo: 8
+    // foo: 9
+
+    // `foo` 被调用了多少次？
+    console.log( foo.count ); // 0 -- 这他妈怎么回事……？
+    
+    /*** 在函数引用函数自身 回避了this ****/
+    
+    function foo() {
+        foo.count = 4; // `foo` 引用它自己
+    }
+    
+    ```
+ 
+    正确的做法是强制`this`指向han'函数对象：     
+    
+    ``` javascript     
+    function foo(num){
+        console.log("foo"+num);
+        this.count++;
+    }
+    foo.count = 0;//函数对象的属性赋值
+    for(var i=0;i<5;i++){
+        // `call(...)` 保证了函数中的this 指向函数对象； 
+        foo.call(foo,i);
+    }
+    console.log(foo.count);
+    ```
+ 2. `this` 不知道指向函数的作用域。    
+    `this` 不会指向词法作用域，`this` 不能隐含的引用函数的词法作用域；
+ 
+ ### this
+ `this` 不是编写时绑定，而是运行时绑定。依赖于函数调用的上下文，与函数声明位置没有任何关系，而与函数的调用方式紧密联系；     
+ 
+ 当函数调用时，会建立一个执行环境的活动记录。记录包括是从何处（调用栈——call-stack）被调用的，函数是如何被调用的，被传递了什么参数等的信息。记录的属性之一，在函数执行期间被使用`this`的引用。
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
