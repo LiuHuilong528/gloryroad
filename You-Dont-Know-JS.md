@@ -144,12 +144,12 @@ JS编译器会在编译过程中找到所有的声明（** 变量或函数 **）
 
 ``` javascript
 /**编译处理**/
-var a;         //编译器将声明提升 - 第一阶段 
+var a;         //编译器将声明提升 - 第一阶段
 a=2;           // 执行 -- 第二阶段，赋值不会被编译器处理的还在原处
 console.log(a);//2
 ```
 
-``` javascript 
+``` javascript
 console.log( a );
 
 var a = 2;
@@ -164,7 +164,7 @@ a = 2;          // 不变-无声明
 ### 提升中-函数优先
 *   当函数声明和变量声明的名称相同时，函数会首先提升，而后是变量。多个重复的 `var `声明，后面的会覆盖前面的。
 
-``` javascript 
+``` javascript
 foo(); // 1
 
 var foo;
@@ -194,7 +194,7 @@ foo = function() {
 * 内部函数只要被**传递到词法作用域外**，它都将维护一个指向它最开始被声明时的作用域的引用，一旦被执行，闭包就会被行使。
 
  ### 模块化
- 
+
  ``` javascript
  /** 模块化的JS **/
 function CoolModule() {
@@ -220,11 +220,11 @@ var foo = CoolModule();
 foo.doSomething(); // cool
 foo.doAnother(); // 1 ! 2 ! 3
  ```
- 
+
  行使模块2个必要条件：
  1. 要有外部的外围函数，且至少被调用一次；
  2. 外围函数至少返回一个内部函数，这样才可以访问私有作用域的变量；
- 
+
  单利模块；
  ``` javascript
  var foo = (function CoolModule() {
@@ -253,7 +253,7 @@ foo.doAnother(); // 1 ! 2 ! 3
  ## 附录A 动态作用域
  **动态作用域**不关心函数和作用域在哪里和如何被声明，而是关心**它们是从何处被调用的**。    
  JavaScript**实际上没有动态作用域**。有词法作用域，但是 `this` 机制和动态作用域类似。
- 
+
  ``` javascript
  function foo() {
 	console.log( a ); // 3  (不是 2!)
@@ -271,17 +271,17 @@ bar();//
 2           //如果是动态作用域则此是 3 ，说明js无动态作用域
 undefined   
  ```
- 
- 
+
+
  词法作用域和动态作用域差异：**词法作用域是编写时的，而动态作用域（和 `this`）是运行时的**。词法作用域关心的是 函数在何处被声明，但是动态作用域关心的是函数 从何处 被调用。
- 
+
  # `this` 与对象原型
- 
- ## `this` 
- 
+
+ ## `this`
+
  1. 函数中的this 并不是指向函数自己。    
 
-    ``` javascript 
+    ``` javascript
     function foo(num) {
         console.log( "foo: " + num );
 
@@ -305,17 +305,17 @@ undefined
 
     // `foo` 被调用了多少次？
     console.log( foo.count ); // 0 -- 这他妈怎么回事……？
-    
+
     /*** 在函数引用函数自身 回避了this ****/
-    
+
     function foo() {
         foo.count = 4; // `foo` 引用它自己
     }
-    
+
     ```
- 
+
     正确的做法是强制`this`指向han'函数对象：     
-    
+
     ``` javascript     
     function foo(num){
         console.log("foo"+num);
@@ -323,37 +323,184 @@ undefined
     }
     foo.count = 0;//函数对象的属性赋值
     for(var i=0;i<5;i++){
-        // `call(...)` 保证了函数中的this 指向函数对象； 
+        // `call(...)` 保证了函数中的this 指向函数对象；
         foo.call(foo,i);
     }
     console.log(foo.count);
     ```
  2. `this` 不知道指向函数的作用域。    
     `this` 不会指向词法作用域，`this` 不能隐含的引用函数的词法作用域；
- 
+
  ### this
  `this` 不是编写时绑定，而是运行时绑定。依赖于函数调用的上下文，与函数声明位置没有任何关系，而与函数的调用方式紧密联系；     
- 
+
  当函数调用时，会建立一个执行环境的活动记录。记录包括是从何处（调用栈——call-stack）被调用的，函数是如何被调用的，被传递了什么参数等的信息。记录的属性之一，在函数执行期间被使用`this`的引用。
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
+
+ ## `this` 解析
+* **调用点**——函数被调用的地方。     
+  **调用栈**——达到当前执行位置而被调用的所有方法的堆栈。
+
+``` javascript
+function baz() {
+    // 调用栈是: `baz`
+    // 我们的调用点是 global scope（全局作用域）
+
+    console.log( "baz" );
+    bar(); // <-- `bar` 的调用点
+}
+
+function bar() {
+    // 调用栈是: `baz` -> `bar`
+    // 我们的调用点位于 `baz`
+
+    console.log( "bar" );
+    foo(); // <-- `foo` 的 call-site
+}
+
+function foo() {
+    // 调用栈是: `baz` -> `bar` -> `foo`
+    // 我们的调用点位于 `bar`
+
+    console.log( "foo" );
+}
+
+baz(); // <-- `baz` 的调用点
+```
+
+### `this` 绑定四原则：
+- 默认绑定;
+  - 独立函数的调用 - `this`绑定到全局对象
+- 隐含绑定-调用点是否有一个环境对象（context object），也称为拥有者（owning）或容器（containing）对象;
+  ``` javascript
+  function foo() {
+  	console.log( this.a );
+  }
+
+  var obj = {
+  	a: 2,
+  	foo: foo
+  };
+
+  obj.foo(); // 2
+  ```
+  **注意** `foo()` 被声明然后作为引用属性添加到 `obj` 上的方式。无论 `foo()` 是否一开始就在 `obj` 上被声明，还是后来作为引用添加（如上面代码所示），这个函数都不被 `obj` 所真正“拥有”或“包含”。    
+  **隐含丢失**
+  ```` javascript
+  function foo() {
+  	console.log( this.a );
+  }
+
+  var obj = {
+  	a: 2,
+  	foo: foo
+  };
+
+  var bar = obj.foo; // 函数引用！
+
+  var a = "oops, global"; // `a` 也是一个全局对象的属性
+
+  bar(); // "oops, global"
+  ```
+- 明确绑定-借用 `call(...)` 和 `apply(...)`         
+  硬绑定将函数用`call(...)`或者`apply(...)`包装一层
+  ``` javascript
+  // foo() 的this 会根据 调用的情况而变化
+  function foo() {
+  	console.log( this.a );
+  }
+
+  var obj = {
+  	a: 2
+  };
+
+  var bar = function() {
+  	foo.call( obj );
+  };
+  // bar 的 `this` 已经固定为 obj 且不可以改变
+  bar(); // 2
+  setTimeout( bar, 100 ); // 2
+
+  // `bar` 将 `foo` 的 `this` 硬绑定到 `obj`
+  // 所以它不可以被覆盖
+  bar.call( window ); // 2
+  ```
+  ES6内建工具绑定`Function.prototype.bind`
+- `new` 绑定    
+  在函数前 `new` 时，构造器调用时，完成如下事情：
+  - 全新的对象被构建
+  - 新构建的对象被接入原型链
+  - 新构建的对象被设置位函数调用的 `this` 的绑定;
+  - 除非函数返回它自己的其他对象，否则这个`new`函数返回自动构建的对象;
+  ``` javascript
+  function foo(a){
+    this.a = a;
+  }
+  var bar = new foo(2);
+  console.log(bar.a);
+  ```
+
+**`this`绑定原则优先级**(低到高)    
+>1.默认 2.隐含绑定 3.`new` 4.硬绑定
+### 判定`this`
+判定`this`按照如下顺序：
+1. 函数是通过`new`调用的吗？ 是则`this` 是新构建的对象;
+2. 函数是否通过call和apply被调用，甚至隐藏在 bind 硬绑定之中？是，则this就是那个被绑定的对象。
+3. 函数是通过环境对象被调用？是则，this就是那个环境对象;
+4. 否则this绑定在global对象;
+
+### 绑定的特例
+- 被忽略的`this`    
+  将null、undefined 作为 call apply或bind的this的绑定参数，这些值会被忽略，适用默认绑定规则
+- 间接引用
+- 软化绑定
+
+### 词法`this`
+箭头函数通过“大箭头”操作符：`=>`与使用四种标准的 `this`不同，箭头函数从封闭它的作用域采用this绑定;
+```javascript
+function foo() {
+  // 返回一个箭头函数 -被函数 foo（）封闭 这里的a就是 调用foo()的对象的a
+	return (a) => {
+    // 这里的 `this` 是词法上从 `foo()` 采用的
+		console.log( this.a );
+	};
+}
+
+var obj1 = {
+	a: 2
+};
+
+var obj2 = {
+	a: 3
+};
+
+var bar = foo.call( obj1 );
+bar.call( obj2 ); // 2, 不是3!
+```  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3
