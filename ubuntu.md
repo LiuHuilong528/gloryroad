@@ -5,3 +5,6 @@
 
 *   清除数据   
     `dpkg -l |grep ^rc|awk '{print $2}' |sudo xargs dpkg -P `
+
+*   日志查看命令：   
+    `cat -n test.log |grep "地形"`  ---查看有包含'地形'的日志
