@@ -478,6 +478,131 @@ var bar = foo.call( obj1 );
 bar.call( obj2 ); // 2, 不是3!
 ```  
 
+## 对象
+* 函数不会属于对象;尽管声明函数表达式作为字面对象的一部分，函数也不会属于这个对象——只是同个对象多次引用。
+
+### 属性描述符
+
+* 四个属性描述符：
+  1. `writable`
+  2. `enumerable`
+  3. `configurable`
+  4. `value`
+
+`object.getOwnPropertyDescriptor(object,property)` 查看属性的描述符;    
+`Object.defineProperty(object,property,{descriptorConfigKey:Value})` 添加或修改描述符的值;
+``` javascript
+var myObject = {};
+
+Object.defineProperty( myObject, "a", {
+	value: 2,
+	writable: true,
+	configurable: true,
+	enumerable: true
+} );
+
+myObject.a; // 2
+```
+
+
+
+* `writable`控制改变属性值的能力;值是：`false`时对属性值的修改会失败！
+``` javascript
+var myObject = {};
+
+Object.defineProperty( myObject, "a", {
+	value: 2,
+	writable: false, // 不可写！
+	configurable: true,
+	enumerable: true
+} );
+
+myObject.a = 3;
+
+myObject.a; // 2 修改失败
+```
+
+* 可配置性`configurable` - 控制其他三个描述符的值是否可以修改
+  - `configurable` 为`false`是单向操作，不可以撤销———`true`可以设置为`false`，`false`不能再设置`true`
+  - `configurable:false`时，则`writable`只能从`true`变`false`;
+  - `configurable:false`时，`delete` 操作符移除既存属性的能力;
+* 可枚举性`enumerable`-- 控制着一个属性是否能在特定的对象-属性枚举操作中出现，如：`for ... in`
+  - `enumerable:false` 时属性可以正常访问，但是不能在枚举中出现的;
+* 不可变`Immutable`
+
+四种方法创建不可变对象：    
+  1. `writable:false`与`configurable:flase` 组合创建常量;
+  2. 防止扩展(Prevent Extensions)——`Object.preventExtensions(obj)`
+  3. 封印(Seal)    
+     `Objecet.seal(obj)` 意味在当前对象调用`Objecet.preventExtensions(...)`,同时将既有属性设置`configurable:false`    
+     不能添加新属性，不可以重新配置和删除既有属性——但是可以修改值
+  4. 冻结(Freeze)    
+     `Objecet.Freeze(obj)` 创建冻结对象，意味在当前对象调用`Object.seal(obj)`,同时设置`writable:false` ,因此值不可变;      
+     这样不能用于引用对象的内容，“深度冻结”对象：在对象上调用`Object.freeze(...)`,然后在属性引用对象迭代递归此方法;
+
+
+
+* [[GET]] 操作——获取属性值
+* [[PUT]] 操作——设置或创建并赋值
+
+### Getters 与 Setters
+为属性定义拥有 getters和setters或两者兼备，则定义就成了“访问器描述符”。访问器描述符，它的`value` 和 `writable`性质没有意义被忽略，JS会考虑的属性有 `get` `set` `configurable` `enumerable`;
+``` javascript
+var myObject = {
+	// 为 `a` 定义一个 getter
+	get a() {
+		return 2;
+	}
+};
+
+Object.defineProperty(
+	myObject,	// 目标对象
+	"b",		// 属性名
+	{			// 描述符
+		// 为 `b` 定义 getter
+		get: function(){ return this.a * 2 },
+
+		// 确保 `b` 作为对象属性出现
+		enumerable: true
+	}
+);
+
+myObject.a; // 2
+
+myObject.b; // 4
+```
+
+### 存在性（Existence）
+`in`操作符——属性是否存在于对象中，亦或存在于`[[prototype]]`链对象遍历的更高层中;`hasOwnProperty(...)`**仅仅**检查是否拥有属性，不会查询`[[prototype]]`链。
+#### 枚举(Enumeration)
+`Object.propertyIsEnumerable(...)`判断属性是否直接存在于对象上，并且`enumerable:true`.    
+'Object.keys(...)' 返回对象**所有可枚举**属性的数组;`Object.getOwnPropertyNames(...)`返回所有属性的数组，**不论是否可枚举**。
+### 迭代(Iteration)
+- `forEach(...)` 迭代数组中所有的值，忽略回调的返回值。
+- `every(...)` 迭代数组到最后，或者当回调返回 `false` 值时停止;
+- `some(...)` 迭代到最后，或者回调返回 `true` 值时停止;
+- ES6 `for .. of` 迭代可以直接获得迭代值：    
+  ``` javascript
+  var  myArray = [1,2,3];
+  for(var v of myArray){
+    conole.log(v);
+  }
+  //1
+  //2
+  //3
+  ```
+  `for ... of` 循环会提供一个迭代器;`@@iterator` 内部对象;
+  ```javascript
+  var myArray = [1,2,3];
+  var it = myArray[Symbol.iterator]();
+  it.next();//{value:1,done:false}
+  it.next();//{value:2,done:false}
+  it.next();//{value:3,done:false}
+  it.next()://{done:true}
+  ```
+
+
+
 
 
 
