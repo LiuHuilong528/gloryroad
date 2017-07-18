@@ -592,7 +592,7 @@ myObject.b; // 4
   //3
   ```
   `for ... of` 循环会提供一个迭代器;`@@iterator` 内部对象;
-  ```javascript
+  ``` javascript
   var myArray = [1,2,3];
   var it = myArray[Symbol.iterator]();
   it.next();//{value:1,done:false}
@@ -601,9 +601,79 @@ myObject.b; // 4
   it.next()://{done:true}
   ```
 
+## 混合（淆）“类”的对象
+类是一种设计模式。许多语言提供语法来启用自然而然的面向类的软件设计。JS也有相似的语法，但是行为和其他语言的工作原理**有很大不同**。
+
+**类意味着拷贝。**
+
+当一个传统的类被实例化时，就发生了类的行为向实例中拷贝。当类被继承时，也发生父类的行为向子类的拷贝。
+
+多态（在继承链的不同层级上拥有同名的不同函数）也许看起来意味着一个从子类回到父类的相对引用链接，但是它仍然只是拷贝行的的结果。
+
+JavaScript**不会自动地**（像类那样）在对象间创建拷贝。
 
 
+mixin 模式常用于在*某种程度上*模拟类的拷贝行为，但是这通常导致像显式假想多态那样（`OtherObj.methodName.call(this, ...)`）难看而且脆弱的语法，这样的语法又常导致更难懂和更难维护的代码。
 
+明确的 mixin 和类*拷贝*又不完全相同，因为对象（和函数！）仅仅是共享的引用被复制，不是对象/函数自身被复制。不注意这样的微小之处通常是各种陷阱的根源。
+
+一般来讲，在 JS 中模拟类通常会比解决当前*真正*的问题埋下更多的坑。
+
+## 原型
+### [[Prototype]]
+[[Prototype]] ——一个其他对象的引用的JS对象的内部属性；对象被创建时，被赋予`null`.
+
+**`Object.prototype`**
+
+每个*普通*`[Prototype]`链的最顶端，就是内建`Object.prototype`.
+
+属性值的查找总是从`[Prototype]`的**最低层开始找**；
+
+`myObject.foo="bar"` ，`foo`不直接存在于`myObject`,而在`myObject`的`[[Prototype]]`链的高层；三种场景：      
+- 属性的`writable:true`，则直接在`myObject`上添加新属性，形成**遮蔽属性**；
+- 属性的`writable:fasle`,则**赋值会报错**，不会有遮蔽属性；
+- 属性是个`setter`，则 `setter`被调用，`myOjbect`不会有新属性，也不会有遮蔽属性；
+
+### “类”
+**JS中没有类，仅有对象。**
+
+#### “类”函数
+
+JS中所有的函数默认会得到一个公有、不可枚举的属性——`prototype`——可以指向任何的对象，称为 原型。
+
+``` javascript
+function Foo(){
+    
+}
+var a = new Foo();
+Object.getPrototypeOf( a ) === Foo.prototype; // true
+```
+在以上这段代码中，`a`的`[[Prototype]]`和`Foo.prototype`所指的对象是同一个对象； 
+
+**“构造器”(Constructors)**
+
+``` javascript
+function Foo() {
+	// ...
+}
+
+Foo.prototype.constructor === Foo; // true
+
+var a = new Foo();
+a.constructor === Foo; // true
+```
+
+- 在`Foo.prototype`上的`.constructor`属性仅当`Foo`函数被声明时才出现在对象上。如果你创建一个新对象，并用它替换函数默认的`.prototype`对象引用，这个新对象上将不会魔法般地得到`.contructor`。
+
+```javascript
+function Foo() { /* .. */ }
+
+Foo.prototype = { /* .. */ }; // 创建一个新的prototype对象
+
+var a1 = new Foo();
+a1.constructor === Foo; // false!
+a1.constructor === Object; // true!
+```
 
 
 
