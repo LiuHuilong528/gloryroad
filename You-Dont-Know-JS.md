@@ -675,6 +675,12 @@ a1.constructor === Foo; // false!
 a1.constructor === Object; // true!
 ```
 
+上面代码的解释：`a1`没有`.constructor`属性，所以它沿者`[[Prototype]]`链向上委托到了`Foo.prototype`。但是这个对象也没有`.constructor`（默认的`Foo.prototype`对象就会有！），所以它继续委托，这次轮到了`Object.prototype`，委托链的最顶端。那个 对象上确实拥有`.constructor`，它指向内建的`Object(..)`函数。
+
+- `Object.create(...)`创建新对象，并将对象链接到指定对象上，`Bar.prototype = Object.create( Foo.prototype )`;
+- `._proto_`属性设置，可以改变对象的链接；而ES6中`Object.setPrototypeOf(...)`改变对象的链接；
+
+- `instanceof` 在对象的整个`[[Prototype]]`中，有没有函数的`.prototype`指向的对象；
 
 
 
