@@ -704,16 +704,59 @@ Object.defineProperty( Object.prototype, "__proto__", {
 
 
 
-## 行为委托
+### 行为委托
 
 - 行为委托：在某个对象的属性或方法没能在对象上找到时，让这个对象为属性或方法引用到一个委托。     
   **注意：**委托更适合作为内部实现的细节，不可以直接暴露在API接口设计中。
 
+- **OLOO**（链接到其他对象的对象）是一种没有类的抽象，而直接创建和关联对象的代码风格。OLOO十分自然地实现了基于`[[Prototype]]`的行为委托。
+
+### 附录A: ES6 `class`
+ `class`在假装修复JS中的类/继承设计模式的问题上做的好。实际上上:**它隐藏了许多问题，而且引入其他微妙而危险的东西**。
 
 
+## 类型与文法
+### 类型
+
+#### 内建类型：
+- `null`
+- `undefined`
+- `boolean`
+- `number`
+- `string`
+- `object`
+- `symbol`
+
+**注意**：除了`object`其他都是**“基本类型”(primitives)**.
+
+`typeof`检测值的类型，但是返回值并不是一一对应的：
+``` javascript
+typeof undefined        === 'undefined';//true
+typeof true             === 'boolean';//true
+typeof 42               === 'number';//true
+typeof "45"             === 'string';//true
+typeof {'life':7777}    === 'object';//true
+
+//ES6 新类型
+typeop Symbol()         === 'symbol';//true
+
+typeof null             === 'object';//true
+
+typeof function a(){}   === 'function';//true
+```
+
+**`typeof null` 返回值是`object`**        
+`function`是对象（object）的子类型，拥有`[[call]]`内部属性，就可以 被调用的对象；
 
 
+#### 值作为类型
 
+JavaScript中变量没有类型---**值才有类型**。
+
+
+**`undefined` vs `undeclared`**
+- `undefined` 声明了变量，但是还没有赋值
+- `undeclared` 作用域中没有声明；
 
 
 
