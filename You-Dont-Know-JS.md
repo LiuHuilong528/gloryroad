@@ -643,12 +643,12 @@ JS中所有的函数默认会得到一个公有、不可枚举的属性——`pr
 
 ``` javascript
 function Foo(){
-    
+
 }
 var a = new Foo();
 Object.getPrototypeOf( a ) === Foo.prototype; // true
 ```
-在以上这段代码中，`a`的`[[Prototype]]`和`Foo.prototype`所指的对象是同一个对象； 
+在以上这段代码中，`a`的`[[Prototype]]`和`Foo.prototype`所指的对象是同一个对象；
 
 **“构造器”(Constructors)**
 
@@ -681,7 +681,33 @@ a1.constructor === Object; // true!
 - `._proto_`属性设置，可以改变对象的链接；而ES6中`Object.setPrototypeOf(...)`改变对象的链接；
 
 - `instanceof` 在对象的整个`[[Prototype]]`中，有没有函数的`.prototype`指向的对象；
+- `._proto_` 获得了`[[Prototype]]`对象的引用,ES6标准化了；是 getter/setter ：
 
+``` javascript
+Object.defineProperty( Object.prototype, "__proto__", {
+	get: function() {
+		return Object.getPrototypeOf( this );
+	},
+	set: function(o) {
+		// setPrototypeOf(..) as of ES6
+		Object.setPrototypeOf( this, o );
+		return o;
+	}
+} );
+```
+
+- 使两个对象相互链接在一起的最常见方法是将`new` 关键字与函数调用一起使用     
+  使用`new`调用的函数有个被随便的命名为 `.prototype` 的属性，这个属性引用的对象恰好就是新对象链接到的“另一个对象”。带有`new` 的函数调用通常被称为“构造器”，尽管实际上没有传统的面向对象语言那样初始化一个类。
+
+- javascript 中的这些机制和传统的面向对象语言的“初始化类”和“类继承” 类似，关键区别是：javascript中没有方法的拷贝发生，而是通过对象最终通过`[[Proprotype]]`链接在一起。    
+  **Javascript中的面向对象的特性，"委托"是个更确切的术语，这些关系不是_拷贝_而是委托链接**
+
+
+
+## 行为委托
+
+- 行为委托：在某个对象的属性或方法没能在对象上找到时，让这个对象为属性或方法引用到一个委托。     
+  **注意：**委托更适合作为内部实现的细节，不可以直接暴露在API接口设计中。
 
 
 
