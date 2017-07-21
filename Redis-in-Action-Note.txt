@@ -8,12 +8,12 @@ STRING	LIST	SET	HASH	ZSET
 Redis Command -- redis 命令
 String	command
 
-set	 key 	value 
+set	 key 	value
 get	 key
 del	 key
 
 ---Redis字符串自增和自减命令
-incr		key	
+incr		key
 decr		key
 incrby		key	amount
 decrby		key	amount
@@ -51,8 +51,8 @@ brpoplpush	source-key dest-key time-out	-阻塞的 rpoplpush
 
 Set	command
 --常用命令
-sadd		set-key item	集合中增加元素	
-srem		key item [item] 删除元素（一个或多个）  
+sadd		set-key item	集合中增加元素
+srem		key item [item] 删除元素（一个或多个）
 smembers	set-key		集合中所有的元素
 sismember	set-key	item	元素是否存在于集合中
 scard		key 集合的元素的数量
@@ -78,7 +78,7 @@ hmset	hash-key key value [key value ....] 多个增加
 hget	hash-key	sub-key		单个获取hash中的key的值
 hmget	hash-key key [key1]		获取多个hash中的key的值
 hdel	hash-key	key [ key1...]	删除（单个和多个都可以）
-hlen	hash-key			长度 
+hlen	hash-key			长度
 
 -- 高级特性
 hexists 	hash-key key 	给那定接键是否存在hash中
@@ -95,19 +95,19 @@ Zset	command
 有序集合既可以按成员访问，也可以按分值访问。
 
 --常见命令
-zadd		zset-key score	member [score1 member1 ....]  增加	
+zadd		zset-key score	member [score1 member1 ....]  增加
 zrem		zset-key member [member1]  删除
 zacard		zset-key  - 有序集合的元素数量
 zincrby		zset-key increment member  -将member成员的score加上 incremenet
 zcount		zset-key min max  -返回分值min——max之间的元素数量
 zrank		zset-key member	  -返回member的排名（升序）
-zscore		zset-key member   -返回member的分值	
+zscore		zset-key member   -返回member的分值
 zarange		zset-key start end [WITHSCORES] -返回排名start--end之间的成员，withscores则分值也会返回
 zrevrank	zset-key member    -返回member的排名（降序）
 zrevrange	zset-key start stop [WITHSCORES] -返回排在在start--stop中的成员，也可带分值
 zrangebyscore	zset-key min max [WITHSCORES] [LIMIT offset count] -返回min--max之间所有的成员(分值升序)
 zrevrangebyscore zset-key  min max [WITHSCORES] [LIMIT offset count] -返回min--max之间所有的成员（分值降序）
-zremrangebyrank		zset-key start stop 
+zremrangebyrank		zset-key start stop
 zremrangebyscore	zset-key min max
 zinterstore		dest-key key-count key [key1...] [WEIGHTS weight [weight...]] [AGGREGATE SUM|MIN|MAX]	-对给定的有序集合执行集合的交集
 zunionstore		dest-key key-count key [key1...] [WEIGHTS weight [weight...]] [AGGREGATE SUM|MIN|MAX]	-对给定的有序集合执行集合的并集
@@ -122,11 +122,11 @@ psubscribe pattern [pattern1...] 订阅和模式匹配的频道
 punsubscribe pattern [pattern1...] 退订
 
 其他命令：
-sort source-key [BY pattern] [LIMMIT offset count] [GET pattern [GET pattern].....] [ASC|DESC] [ALPHA] [STORE dest-key] 
+sort source-key [BY pattern] [LIMMIT offset count] [GET pattern [GET pattern].....] [ASC|DESC] [ALPHA] [STORE dest-key]
 --根据特定的选项，将输入的列表、集合、散列和有序集合排序，返回或者存储排序结果。
 
 Redis 事务命令：
-WATCH MULTI EXEC UNWATCH 
+WATCH MULTI EXEC UNWATCH
 Redis接到 MULTI命令后，将之后的命令放入队列中，直到接收到 EXEC 命令，在不被其他客户端中断的情况下将命令按接收顺序执行;
 
 
@@ -135,7 +135,7 @@ persist		key
 ttl		key
 expire		key	seconds
 expireat	key	timestamp
-pttl		key	
+pttl		key
 pexpire		key	milliseconds
 pexpireat	key	timestamp-milliseconds
 
