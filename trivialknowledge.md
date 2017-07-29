@@ -23,6 +23,11 @@ private List<String> name = new ArrayList<String>();
 //这样就可以接到数据了
 ```
 
+* `Comparator` 中 `a.compareTo(b)` :    
+  `1`  -> b a   
+  `0`  -> a b   
+  `-1` -> a b
+
 
 
 
@@ -92,3 +97,14 @@ private List<String> name = new ArrayList<String>();
 
 
 - `$("A~B")` 查找A元素后面的兄弟节点，不包括非直接子节点
+
+
+
+# Maven
+`mvn install -Dmaven.test.skip=true`  -- 跳过test 编译
+
+`mvn eclipse:eclipse` --创建IDE工程文件
+
+
+# Solr
+q 查询关键字，

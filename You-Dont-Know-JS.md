@@ -491,6 +491,7 @@ bar.call( obj2 ); // 2, 不是3!
 
 `object.getOwnPropertyDescriptor(object,property)` 查看属性的描述符;    
 `Object.defineProperty(object,property,{descriptorConfigKey:Value})` 添加或修改描述符的值;
+
 ``` javascript
 var myObject = {};
 
@@ -507,20 +508,21 @@ myObject.a; // 2
 
 
 * `writable`控制改变属性值的能力;值是：`false`时对属性值的修改会失败！
-``` javascript
-var myObject = {};
 
-Object.defineProperty( myObject, "a", {
-	value: 2,
-	writable: false, // 不可写！
-	configurable: true,
-	enumerable: true
-} );
+  ``` javascript
+    var myObject = {};
 
-myObject.a = 3;
+    Object.defineProperty( myObject, "a", {
+    	value: 2,
+    	writable: false, // 不可写！
+    	configurable: true,
+    	enumerable: true
+    } );
 
-myObject.a; // 2 修改失败
-```
+    myObject.a = 3;
+
+    myObject.a; // 2 修改失败
+  ```
 
 * 可配置性`configurable` - 控制其他三个描述符的值是否可以修改
   - `configurable` 为`false`是单向操作，不可以撤销———`true`可以设置为`false`，`false`不能再设置`true`
@@ -547,6 +549,7 @@ myObject.a; // 2 修改失败
 
 ### Getters 与 Setters
 为属性定义拥有 getters和setters或两者兼备，则定义就成了“访问器描述符”。访问器描述符，它的`value` 和 `writable`性质没有意义被忽略，JS会考虑的属性有 `get` `set` `configurable` `enumerable`;
+
 ``` javascript
 var myObject = {
 	// 为 `a` 定义一个 getter
@@ -581,24 +584,27 @@ myObject.b; // 4
 - `forEach(...)` 迭代数组中所有的值，忽略回调的返回值。
 - `every(...)` 迭代数组到最后，或者当回调返回 `false` 值时停止;
 - `some(...)` 迭代到最后，或者回调返回 `true` 值时停止;
-- ES6 `for .. of` 迭代可以直接获得迭代值：    
+- ES6 `for .. of` 迭代可以直接获得迭代值：
+
   ``` javascript
-  var  myArray = [1,2,3];
-  for(var v of myArray){
-    conole.log(v);
-  }
-  //1
-  //2
-  //3
+    var  myArray = [1,2,3];
+    for(var v of myArray){
+      conole.log(v);
+    }
+    //1
+    //2
+    //3
   ```
+
   `for ... of` 循环会提供一个迭代器;`@@iterator` 内部对象;
+
   ``` javascript
-  var myArray = [1,2,3];
-  var it = myArray[Symbol.iterator]();
-  it.next();//{value:1,done:false}
-  it.next();//{value:2,done:false}
-  it.next();//{value:3,done:false}
-  it.next()://{done:true}
+    var myArray = [1,2,3];
+    var it = myArray[Symbol.iterator]();
+    it.next();//{value:1,done:false}
+    it.next();//{value:2,done:false}
+    it.next();//{value:3,done:false}
+    it.next()://{done:true}
   ```
 
 ## 混合（淆）“类”的对象
@@ -642,12 +648,13 @@ mixin 模式常用于在*某种程度上*模拟类的拷贝行为，但是这通
 JS中所有的函数默认会得到一个公有、不可枚举的属性——`prototype`——可以指向任何的对象，称为 原型。
 
 ``` javascript
-function Foo(){
+  function Foo(){
 
-}
-var a = new Foo();
-Object.getPrototypeOf( a ) === Foo.prototype; // true
+  }
+  var a = new Foo();
+  Object.getPrototypeOf( a ) === Foo.prototype; // true
 ```
+
 在以上这段代码中，`a`的`[[Prototype]]`和`Foo.prototype`所指的对象是同一个对象；
 
 **“构造器”(Constructors)**
@@ -730,6 +737,7 @@ Object.defineProperty( Object.prototype, "__proto__", {
 **注意**：除了`object`其他都是**“基本类型”(primitives)**.
 
 `typeof`检测值的类型，但是返回值并不是一一对应的：
+
 ``` javascript
 typeof undefined        === 'undefined';//true
 typeof true             === 'boolean';//true
@@ -745,8 +753,9 @@ typeof null             === 'object';//true
 typeof function a(){}   === 'function';//true
 ```
 
-**`typeof null` 返回值是`object`**        
-`function`是对象（object）的子类型，拥有`[[call]]`内部属性，就可以 被调用的对象；
+`typeof null` **返回值是** `object`    
+`function` 是对象（object）的子类型，拥有 `[[call]]` 内部属性，就可以 被调用的对象；
+
 
 
 #### 值作为类型
@@ -767,11 +776,131 @@ Javascript的`string`是 不可变得，而`array`是相当可变的；**`string
 
 #### 不是值得值
 `undefined` 有且只有一个值： `undefined`     
-`null` 有且只有一个值： `null`
-
+`null` 有且只有一个值： `null`    
 `NaN` 不会等于自己，不具有反射性的值。
 
 JS中和java一样是引用传递参数；
+
+### 原生类型
+`Function.prototype`是个函数，`RegExp.prototype`是个正则表达式，而`Array.prototype`是个数组。
+
+
+### 强制转换
+#### ToString
+**JSON字符串化**
+
+`JSON.stringfy(...)`将值序列化为JSON兼容的`string`的值。
+
+``` javascript
+JSON.stringify( 42 );	// "42"
+JSON.stringify( "42" );	// ""42"" （一个包含双引号的字符串）
+JSON.stringify( null );	// "null"
+JSON.stringify( true );	// "true"
+```
+
+`JSON.stringify(..)`工具在遇到`undefined`，`function`，和`symbol`时将会自动地忽略它们。如果在一个`array`中遇到这样的值，它会被替换为`null`（这样数组的位置信息就不会改变）。如果在一个`object`的属性中遇到这样的值，这个属性会被简单地剔除掉。
+
+``` javascript
+JSON.stringify( undefined );					/*undefined*/
+JSON.stringify( function(){} );					/*undefined*/
+
+JSON.stringify( [1,undefined,function(){},4] );	/**"[1,null,null,4]"**/
+JSON.stringify( { a:2, b:function(){} } );		// "{"a":2}"
+```
+
+`JSON.stringify(...)`字符串化带有循环引用的`Object`会抛出错误；可以在Object上定义`toJOSN()`方法来处理；JSON字符串化会首先调用Object上的`toJSON`方法，以取得序列化的值;`toJSON()`-变为一个适用于字符串化的JSON安全值。
+
+``` javascript
+var o = { };
+
+var a = {
+	b: 42,
+	c: o,
+	d: function(){}
+};
+
+// 在`a`内部制造一个循环引用
+o.e = a;
+
+// 这回因循环引用而抛出一个错误
+// JSON.stringify( a );
+
+// 自定义一个JSON值序列化
+a.toJSON = function() {
+	// 序列化仅包含属性`b`
+	return { b: this.b };
+};
+
+JSON.stringify( a ); // "{"b":42}"
+
+```
+
+
+`JSON.stringify(..)`的第二个参数是可选的，可以使 `Array` 也可以是 `function` ，过滤掉属性
+
+
+#### ToBoolean
+* Falsy值列表：
+  - `undefined`
+  - `null`
+  - `false`
+  - +0 -0 NaN
+  - ""
+
+
+#### 明确的强制转换
+
+**String <---> Numbers**
+
+``` javascript
+var a = '3.14';
+var b = + c ;// b = 3.14 一元操作符将操作数强制转化为  Number
+```
+
+一元操作符 `-` `*` `\` 都可以将`String`转换成 `number`，这些操作仅为数字定义；
+
+`||` 和 `&&` 操作符都在 **第一个操作数** 上进行 `boolean` 测试；如果第一个操作数不是 `boolean` 则进行 `ToBoolean` 转换；   
+`||` 如果测试结果是 `true` ，第一个操作数作为结果；结果为 `false` 则将第二个操作数作为结果；`&&` 结果是 `true` ，第二个操作数作为结果；结果为 `false` 则将第一个操作数作为结果。
+
+``` javascript
+  var a = 42;
+  var b = "abc";
+  var c = null;
+
+  a || b;		// 42
+  a && b;		// "abc"
+
+  c || b;		// "abc"
+  c && b;		// null
+```
+
+“ `==` 允许在等价性比较中进行强制转换，而 `===` 不允许强制转换”。
+
+当 `==` 的任意一边是一个boolean值时， `boolean` 总是首先被强制转换为一个 `number` 。
+
+`null == undefined` 返回 `true`;
+
+
+### 文法
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
