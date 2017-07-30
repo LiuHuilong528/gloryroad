@@ -132,7 +132,7 @@ Redis接到 MULTI命令后，将之后的命令放入队列中，直到接收到
 
 Redis过期时间处理命令：
 persist		key
-ttl		key
+ttl		key									--以秒为单位返回 key 的剩余过期时间;
 expire		key	seconds
 expireat	key	timestamp
 pttl		key
