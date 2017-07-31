@@ -49,6 +49,15 @@ redis.conf 配置项说明：
 30. `include /path/to/local.conf`  --制定包含其他的配置文件，同一主机多个Redis实例之间使用同一配置文件，各实例又可以拥有特定配置；
 
 
+### Redis 构建分布式锁
+- `WATCH` -- 是乐观锁，它只通知数据被修改，而不会阻止数据被修改。
+- `SETNX` -- 也有加锁的功能，但不完整。     
+  `SETNX key value` -- 生成锁，同时插入 key value 的`String`
+
+
+
+
+
 
 
 
