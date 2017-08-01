@@ -107,4 +107,78 @@ private List<String> name = new ArrayList<String>();
 
 
 # Solr
-q 查询关键字，
+**solr通用查询参数：**     
+* defType  查询解析器   
+* sort filedName ASC|DESC  对查询结果排序
+* start num   分页用的   
+* rows num    分页用，每页容量   
+* fl   filedList  过滤结果字段，用`,`分隔   
+* fq  filed:value 对字段的值过滤
+* timeAllowed  指定query执行时间    
+* omitHeader  去除响应头信息   
+* wt  指定查询结果数据格式：json python csv php xml ruby     
+
+
+**Solr 标准查询参数：**    
+* q   标准语法查询语句
+* q.op  查询表达式的默认操作符
+* df   默认field
+* sow  
+
+* 通配符查询    
+  `tes*` 匹配：`test` 和 `testing`等
+
+* 模糊查询    
+  `roam~1` 模糊查询 匹配距离为1：`roam` 和`foam` 不会匹配`foams` 距离是2
+
+
+* 邻近查询    
+  `"jakara apache"~10` -含义：`jakara` 和 `apache` 相距10个单词
+
+* 范围查询    
+  `[]`、`{}`、`{]` ；`[`-包括值在内， `{}` -会将值排除在外
+
+* 相关度    
+  `jakarta  apache^4`  - 结果与 `apache` 更相关
+
+* 常数分数查询
+  ` <query_clause>^=<score>` 剔除无关的信息；
+
+### Facet 查询
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3
