@@ -882,6 +882,152 @@ var b = + c ;// b = 3.14 一元操作符将操作数强制转化为  Number
 
 
 ### 文法
+#### 表达式副作用
+
+``` javascript
+var a = 1;
+var b = a++;
+// b=1 ; a =2
+```
+
+
+#### 上下文规则
+#### 操作符优先级
+
+```javascript
+a && b || c  ? c || b ? a : c && b : a
+//等同于如下 因为 && > || > ?: 优先级高
+（a && b || c ）?(c || b ) ? a : (c && b) : a
+```
+
+##### `try .. finally`
+
+``` javascript
+function foo() {
+	try {
+		return 42;
+	}
+	finally {
+		console.log( "Hello" );
+	}
+
+	console.log( "never runs" );
+}
+
+console.log( foo() );
+// Hello
+// 42
+```
+
+`return 42` 立即运行，设置好`foo()`函数返回值。这些完成了`try`子句而`finally` 子句运行。如此 `foo()` 函数才完成；
+
+``` javascript
+function foo() {
+	try {
+		return 42;
+	}
+	finally {
+		// 这里没有 `return ..`，所以返回值不会被覆盖
+	}
+}
+
+function bar() {
+	try {
+		return 42;
+	}
+	finally {
+		// 覆盖前面的 `return 42`
+		return;
+	}
+}
+
+function baz() {
+	try {
+		return 42;
+	}
+	finally {
+		// 覆盖前面的 `return 42`
+		return "Hello";
+	}
+}
+
+foo();	// 42
+bar();	// undefined
+baz();	// "Hello"
+```
+
+
+## 异步与性能
+### 异步：现在与稍后
+事件运行时，事件轮询将运行至队列为空。事件轮询的每次迭代称为一个“tick”。用户交互，IO,和定时器将事件在事件队列中排队。
+
+### 回调
+
+### Promisses
+#### 链式流程
+Promise两个固有行为：
+* `Promise` 上调用 `then(...)` 时，返回的是个新的 `Promise` ；    
+* `then(...)` 返回的值都可以被Promise链接
+
+**Resolve(解析),Fultill(完成),Reject(拒绝)**
+
+###　Generator
+generator的声明格式化二中形式：
+
+``` javascript
+//形势1
+function* funName(){}
+// 形式2
+function *funName(){}
+
+//example
+var x = 1;
+function *foo(){
+  x++;
+  yield;//暂定
+  console.log("x:",x);
+}
+//构建迭代器 it 控制 Generator
+var it = foo();
+// 开始 foo()
+it.next();
+x;              //2
+bar();  
+x;              //3
+it.next();      // x:3
+
+```
+
+##### 迭代通信
+
+``` javascript
+function *foo(x){
+  var y = x * (yield);
+  return y;
+}
+
+var it = foo(6);
+
+it.next(); // 启动 foo() foo会在 yield 暂停；也就是在赋值语句处
+
+var res = it.next(7);//此时 将 7 做为 yield 表达式值传回去； var y = 6 * 7
+res.value = 42;
+
+//  example2
+function *foo(x){
+  var y = x * (yield 'Hello');    // <-- 让出一个值,做为next的返回值
+  return y;
+}
+var it = foo(6);
+
+var res = it.next();              // 第一次 next()
+res.value ;                       // "Hello"
+
+res = it.next(7);                 //  传递 7 给 yield
+res.value;                        // 42
+```
+
+在上例中 `yield` 和 `next()` 一起在 generator 运行期间 构成双向消息传递系统。
 
 
 

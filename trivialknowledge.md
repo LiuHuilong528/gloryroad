@@ -29,10 +29,18 @@ private List<String> name = new ArrayList<String>();
   `-1` -> a b
 
 
+### java8 时间和日期-API
+* `ZoneId` ： 时区ID，用来确定Instant和LocalDateTime互相转换的规则
+* `Instant` :  用来表示时间线上的一个点
+* `LocalDate` 无时区日期，不可变线程安全
+* `LocalTime` 无时区时间，不可变线程安全
+* `LocalDateTime` 无时区时间戳，不可变线程安全
+* `Clock` : 用于访问当前时刻、日期、时间，用到时区
+* `Duration` : 用秒和纳秒表示时间的数量
 
 
 # JQuery
-- 可视化过滤选择器：
+- 可视化过滤选择器：    
   - `$("div:hidden")`        选择所有的被hidden的div元素    
   - `$("div:visible")`        选择所有的可视化的div元素
 
