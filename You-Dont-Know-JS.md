@@ -1029,6 +1029,54 @@ res.value;                        // 42
 
 在上例中 `yield` 和 `next()` 一起在 generator 运行期间 构成双向消息传递系统。
 
+###### `async` 和 `await` ?
+
+``` javascript
+function foo(x,y){
+  return request(
+    "http://some.url.1?x="+x+"&y="+y
+  );
+}
+
+async function main(){
+  try{
+    var text = await foo(11,31);  // 告诉 async 暂停，解析 Promise
+    console.log(text);
+  }catch(err){
+    console.log(err);
+  }
+}
+main();
+
+```
+
+##### Generator 委托
+
+```javascript
+function *foo(){
+  console.log("*foo() starting");
+  yield 3;
+  yield 4;
+  console.log("foo() finished");
+}
+
+function *bar(){
+  yield 1;
+  yield 2;
+  yield *foo(); // 'yield' - 代理
+  yield 5;
+}
+
+var it = bar();
+
+it.next().value;          // 1
+it.next().value;          // 2
+it.next().value;          // *foo() starting
+                          //  3
+it.next().value;          // 4
+it.next().value;          // *foo() finished
+
+```
 
 
 
