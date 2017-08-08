@@ -1084,6 +1084,58 @@ it.next().value;          // *foo() finished
 
 
 
+##### 解构
+对象字面量是`target <-- source`，而对象解构赋值是 `source --> target`;由值推断变量值;
+###### 不仅是声明
+
+``` JavaScript
+var a,b,c,x,y,z;
+
+[a,b,c] = foo();// foo() 返回数组
+({x,y,z} = bar() ); // -- 此省略了 `var let const` 等，要将赋值语句用（）包起来，否则，左边的 { 会被当初语句块;
+
+```
+
+###### 标签型模板字面量
+
+```JavaScript
+function foo(strings, ...values) {
+	console.log( strings );
+	console.log( values );
+}
+
+var desc = "awesome";
+
+foo`Everything is ${desc}!`; // 是 (...) 特殊函数调用;strings 接收string数组，所有普通字符串的数组（所有被插值的表达式之间的东西）; ...values 接收插值表达式的结果
+// [ "Everything is ", "!"]
+// [ "awesome" ]
+
+```
+
+* 原始字符串
+``` javascript
+function showraw(strings, ...values) {
+	console.log( strings );
+	console.log( strings.raw );// 保留转移序列
+}
+
+showraw`Hello\nWorld`;
+// [ "Hello
+// World" ]
+// [ "Hello\nWorld" ]
+```
+
+###### `=>` 适用原则：
+* 如果你有一个简短的，单语句内联函数表达式，它唯一的语句是某个计算后的值的`return`语句，**并且** 这个函数没有在它内部制造一个`this`引用，**并且** 没有自引用（递归，事件绑定/解除），**并且** 你合理地预期这个函数绝不会变得需要`this`引用或自引用，那么你就可能安全地将它重构为一个`=>`箭头函数。
+* 如果你有一个内部函数表达式，它依赖于外围函数的`var self = this`黑科技或者`.bind(this)`调用来确保正确的this绑定，那么这个内部函数表达式就可能安全地变为一个`=>`箭头函数。
+* 如果你有一个内部函数表达式，它依赖于外围函数的类似于`var args = Array.prototype.slice.call(arguments)`这样的东西来制造一个`arguments`的词法拷贝，那么这个内部函数就可能安全地变为一个`=>`箭头函数。
+* 对于其他的所有东西 —— 普通函数声明，较长的多语句函数表达式，需要词法名称标识符进行自引用（递归等）的函数，和任何其他不符合前述性质的函数 —— 你就可能应当避免`=>`函数语法。
+
+底线：`=>`与`this`，`arguments`，和`super`的词法绑定有关。它们是ES6为了修正一些常见的问题而被有意设计的特性，而不是为了修正bug，怪异的代码，或者错误。
+
+
+
+
 
 
 
