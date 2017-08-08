@@ -38,9 +38,13 @@ JVM支持原始类型数据： `numeric` `boolean` `returnAddress`；
 
 `returnAddress` 是JVM的指针；它是唯一不与java语言直接相关的类型；
 
+`returnAddress` 在JVM中被 `jsr` `ret` `jsr_w` 指令使用; 它的值是指向JVM指令操作码;没有JAVA语言对应的类型也不能在运行程序时改变;
 
+`boolean` 没有专用于 `boolean` 的JVM指令，JAVA中的`boolean` 值会被编译成JVM的 `int`; `1` 代表 `true` 值，`0` 代表 `false`;
 
+### 运行时数据区
 
+有 JVM 数据区、线程堆栈区;
 
 
 
