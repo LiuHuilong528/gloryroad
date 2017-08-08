@@ -1088,7 +1088,7 @@ it.next().value;          // *foo() finished
 对象字面量是`target <-- source`，而对象解构赋值是 `source --> target`;由值推断变量值;
 ###### 不仅是声明
 
-``` JavaScript
+``` javascript
 var a,b,c,x,y,z;
 
 [a,b,c] = foo();// foo() 返回数组
@@ -1098,7 +1098,7 @@ var a,b,c,x,y,z;
 
 ###### 标签型模板字面量
 
-```JavaScript
+```javascript
 function foo(strings, ...values) {
 	console.log( strings );
 	console.log( values );
@@ -1134,31 +1134,6 @@ showraw`Hello\nWorld`;
 底线：`=>`与`this`，`arguments`，和`super`的词法绑定有关。它们是ES6为了修正一些常见的问题而被有意设计的特性，而不是为了修正bug，怪异的代码，或者错误。
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ######## `for .. of` 循环
 使用 `for .. of` 遍历的值必须是 *可迭代对象* ,或可以转换为可迭代的值；
 
@@ -1186,6 +1161,19 @@ JavaScript 标准的内建默认可迭代对象：
 
 ######## 粘性标志
 正则表达式的模式标志 `y` ，称为"粘性模式"；*粘性* 实质上意味着正则表达式在它开始时有一个虚拟的锚点，这个锚点使正则表达式仅以自己的`lastIndex`属性所指示的位置为起点进行匹配。
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
