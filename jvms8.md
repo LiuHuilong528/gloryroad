@@ -38,11 +38,28 @@ JVM支持原始类型数据： `numeric` `boolean` `returnAddress`；
 
 `returnAddress` 是JVM的指针；它是唯一不与java语言直接相关的类型；
 
+`returnAddress` 在JVM中被 `jsr` `ret` `jsr_w` 指令使用; 它的值是指向JVM指令操作码;没有JAVA语言对应的类型也不能在运行程序时改变;
 
+`boolean` 没有专用于 `boolean` 的JVM指令，JAVA中的`boolean` 值会被编译成JVM的 `int`; `1` 代表 `true` 值，`0` 代表 `false`;
 
+### 运行时数据区
 
+有 JVM 数据区、线程堆栈区;
 
+#### 程序计数寄存器
+每个线程有自己的 _程序计数器_ ，任何时候，JVM线程运行一个方法，就是线程的当前方法；如果方法不是 `native` ，则 `pc` 寄存器包含当前JVM执行的指令；是 `native` 则undifined。
 
+#### JVM 栈的模式：固定栈大小、动态扩展和收缩；
+
+JVM栈优点：
+* 线程需要的内存大小超过JVM允许的值，抛出：`StackOverflowError`;
+* JVM动态扩展时，栈不足，抛出：`OutOfMemoryError`;
+
+#### 堆
+JVM的堆是JVM内线程共享的，运行时数据区，所有对象实例、数组被分配的位置；
+
+堆的优点：
+* 当需要的堆空间超过自动存储管理能够制造的空间时，JVM抛出：`OutOfMemoryError`
 
 
 
