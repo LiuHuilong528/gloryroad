@@ -155,8 +155,12 @@ private List<String> name = new ArrayList<String>();
 ### Facet 查询
 
 
-
-
+## 数据库
+### MySQL
+`select user();`  - 查看当前用户
+`select database();` -- 查看当前数据库
+`net start mysql`   -- dos 启动
+`mysql -h localhost -u root -p password`  - 登录指定服务器、用户、密码
 
 
 
