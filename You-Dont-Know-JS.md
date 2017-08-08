@@ -1107,6 +1107,45 @@ it.next().value;          // *foo() finished
 
 
 
+######## `for .. of` 循环
+使用 `for .. of` 遍历的值必须是 *可迭代对象* ,或可以转换为可迭代的值；
+
+`for .. of` 和 `for .. in `区别：
+``` javascript
+var a = ["a","b","c","d","e"];
+
+for(var idx in a ){       // 遍历数组的键/索引
+  console.log(idx);
+}
+// 0 1 2 3 4
+
+for(var val of a ){       // 遍历数组中的值
+  console.log(val);
+}
+// a b c d e
+
+```
+
+JavaScript 标准的内建默认可迭代对象：
+* Array
+* String
+* Generators
+* Set/类型化数组
+
+######## 粘性标志
+正则表达式的模式标志 `y` ，称为"粘性模式"；*粘性* 实质上意味着正则表达式在它开始时有一个虚拟的锚点，这个锚点使正则表达式仅以自己的`lastIndex`属性所指示的位置为起点进行匹配。
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
