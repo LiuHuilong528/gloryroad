@@ -46,7 +46,20 @@ JVM支持原始类型数据： `numeric` `boolean` `returnAddress`；
 
 有 JVM 数据区、线程堆栈区;
 
+#### 程序计数寄存器
+每个线程有自己的 _程序计数器_ ，任何时候，JVM线程运行一个方法，就是线程的当前方法；如果方法不是 `native` ，则 `pc` 寄存器包含当前JVM执行的指令；是 `native` 则undifined。
 
+#### JVM 栈的模式：固定栈大小、动态扩展和收缩；
+
+JVM栈优点：
+* 线程需要的内存大小超过JVM允许的值，抛出：`StackOverflowError`;
+* JVM动态扩展时，栈不足，抛出：`OutOfMemoryError`;
+
+#### 堆
+JVM的堆是JVM内线程共享的，运行时数据区，所有对象实例、数组被分配的位置；
+
+堆的优点：
+* 当需要的堆空间超过自动存储管理能够制造的空间时，JVM抛出：`OutOfMemoryError`
 
 
 

@@ -161,9 +161,10 @@ private List<String> name = new ArrayList<String>();
 `select database();` -- 查看当前数据库
 `net start mysql`   -- dos 启动
 `mysql -h localhost -u root -p password`  - 登录指定服务器、用户、密码
+`CREATE DATABASE IF NOT EXISTS shiro DEFAULT CHARSET utf8 COLLATE utf8_general_ci;`  -- 创建数据库，指定字符集UTF-8
+`drop database shiro`  --删除数据库 shiro
 
-
-
+`source filepath.sql`   执行数据库sql 脚本
 
 
 
