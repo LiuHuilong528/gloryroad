@@ -640,12 +640,446 @@ Angular会在真正渲染的时候填充 `<ng-template>` 的内容，并且把 `
 - 每个宿主元素只能有一个结构型指令
 
 ##### ` NgSwitch ` 内幕
+
+` [ngSwitch]="hero?.emotion" ` NgSwitch本身不是一个结构指令，而是 **属性指令** ，可以控制 **结构型指令** ` NgSwitchCase ` 和 ` NgSwitchDefault `
+
 ##### 优先使用星号(` * `)语法
 ##### ` <ng-template> ` 指令
+
+` ng-template ` 是Angular元素，渲染HTML；永远不会直接显示出来。在渲染视图前，Angular会把 ` <ng-template> ` 及内容替换成注释。没有使用结构型指令，仅仅把别的元素包装进 ` <ng-template> ` 中，则元素为不可见的。
+
 ##### 使用 ` <ng-container> `把兄弟元素归为一组
+
+` <ng-container> ` 是一个分组元素，不会污染样式或元素布局，因为 Angular **不会将它放进DOM中** 。
+
+```html
+  <div>
+    Pick your favorite hero
+    (<label><input type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
+  </div>
+  <select [(ngModel)]="hero">
+    <ng-container *ngFor="let h of heroes">
+      <ng-container *ngIf="showSad || h.emotion !== 'sad'">
+        <option [ngValue]="h">{{h.name}} ({{h.emotion}})</option>
+      </ng-container>
+    </ng-container>
+  </select>
+```
+
 ##### 写一个结构性指令
+
+创建指令：
+- 导入 ` Directive ` 装饰器
+- 导入符号 ` input `  ` TemplateRef ` 和 ` ViewContainerRef `
+- 指令类添加装饰器
+- 设置 CSS **属性选择器**，标识指令应用的元素
+
+```javascript
+  import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+
+  /**
+   * Add the template content to the DOM unless the condition is true.
+   */
+  @Directive({ selector: '[myUnless]'})// 选择器放在 []中
+  export class UnlessDirective {
+    private hasView = false;
+
+    constructor(
+      private templateRef: TemplateRef<any>,// TemplateRef 内嵌视图的内容
+      private viewContainer: ViewContainerRef) { }  // 视图容器的引用
+
+    @Input() set myUnless(condition: boolean) {
+      if (!condition && !this.hasView) {
+        this.viewContainer.createEmbeddedView(this.templateRef);
+        this.hasView = true;
+      } else if (condition && this.hasView) {
+        this.viewContainer.clear();
+        this.hasView = false;
+      }
+    }
+  }
+```
+
+这个指令会在Angular中生成 ` <ng-template> ` 元素中创建一个 **内嵌的视图**  ，插入一个 **视图容器** 中，紧挨着本指令的原来宿主元素（宿主的兄弟节点，而不是子节点）。
+
 ##### 总结
 
+***
+
+#### 管道
+管道——使数据的展现为对人类更友好的格式。
+##### 使用管道
+
+``` html
+<p>The hero's birthday is {{ birthday | date }}</p>
+```
+
+
+##### 内置管道
+
+` DatePipe ` 、 ` UpperCasePipe ` 、 ` LowerCasePipe ` ` CurrencyPipe ` ` PercentPipe `
+##### 管道参数化
+单个参数： ` currency: 'EUR' `
+多个参数之间用 ` : ` 分开： ` slice:1:5 `
+
+管道格式 *参数绑定* 到 *组件* ` format ` 属性上：
+
+```html
+template: `
+  <p>The hero's birthday is {{ birthday | date:format }}</p>
+  <button (click)="toggleFormat()">Toggle Format</button>
+`
+```
+
+```typescript
+export class HeroBirthday2Component {
+  birthday = new Date(1988, 3, 15); // April 15, 1988
+  toggle = true; // start with true == shortDate
+
+  get format()   { return this.toggle ? 'shortDate' : 'fullDate'; }
+  toggleFormat() { this.toggle = !this.toggle; }
+}
+```
+
+##### 链式管道
+
+```html
+  The chained hero's birthday is
+  {{ birthday | date | uppercase}}
+```
+
+##### 自定义管道
+
+```ts
+import { Pipe, PipeTransform } from '@angular/core';
+/*
+ * Raise the value exponentially
+ * Takes an exponent argument that defaults to 1.
+ * Usage:
+ *   value | exponentialStrength:exponent
+ * Example:
+ *   {{ 2 | exponentialStrength:10 }}
+ *   formats to: 1024
+*/
+@Pipe({name: 'exponentialStrength'})
+export class ExponentialStrengthPipe implements PipeTransform {
+  transform(value: number, exponent: string): number {
+    let exp = parseFloat(exponent);
+    return Math.pow(value, isNaN(exp) ? 1 : exp);
+  }
+}
+```
+
+```ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'power-booster',
+  template: `
+    <h2>Power Booster</h2>
+    <p>Super power boost: {{2 | exponentialStrength: 10}}</p>
+  `
+})
+export class PowerBoosterComponent { }
+```
+
+- 管道带有“管道元数据”装饰器的类
+- 实现 ` PipeTransform ` 接口的 ` transform ` 方法，接收输入值和可选参数，返回转换后的值。
+- ` @Pipe ` 表示这是管道，从 ` core ` 中引入。
+- ` @Pipe ` 装饰器可以定义管道名称，被用在模板表达式中。
+
+**注意点**     
+- 自定义管道的使用和内置管道完全相同
+- 在 ` AppModule ` 的 ` declarations ` 包含这个管道
+
+##### 能力倍增计算器
+
+示例把管道和使用 ` ngModel ` 的双向绑定组合了
+
+```ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'power-boost-calculator',
+  template: `
+    <h2>Power Boost Calculator</h2>
+    <div>Normal power: <input [(ngModel)]="power"></div>
+    <div>Boost factor: <input [(ngModel)]="factor"></div>
+    <p>
+      Super Hero Power: {{power | exponentialStrength: factor}}
+    </p>
+  `
+})
+export class PowerBoostCalculatorComponent {
+  power = 5;
+  factor = 1;
+}
+```
+
+
+##### 管道与变更检测
+Angular 通过 *变更检测* 过程来查找绑定值的变更，并在每一次javascript事件之后运行：按键、鼠标移动、定时器以及服务器的响应。变更检测可能会很昂贵，Angular会尽量降低这种成本。
+
+######  无管道
+
+使用变更检测策略检测和更新 ` heroes `数组中的每个英雄：
+
+```html
+New hero:
+  <input type="text" #box
+          (keyup.enter)="addHero(box.value); box.value=''"
+          placeholder="hero name">
+  <button (click)="reset()">Reset</button>
+  <div *ngFor="let hero of heroes">
+    {{hero.name}}
+  </div>
+```
+
+和模板相伴的组件类有英雄数组，能把新的英雄添加到数组中，还可以重置数组。
+
+```ts
+export class FlyingHeroesComponent {
+  heroes: any[] = [];
+  canFly = true;
+  constructor() { this.reset(); }
+
+  addHero(name: string) {
+    name = name.trim();
+    if (!name) { return; }
+    let hero = {name, canFly: this.canFly};
+    this.heroes.push(hero);
+  }
+
+  reset() { this.heroes = heroes.slice(); }
+}
+```
+
+###### **会飞的英雄** 管道(FlyingHeroesPipe)
+` FlyingHeroesPipe ` 管道可以过滤会飞的英雄：
+
+```ts
+import { Pipe, PipeTransform } from '@angular/core';
+
+import { Flyer } from './heroes';
+
+@Pipe({ name: 'flyingHeroes' })
+export class FlyingHeroesPipe implements PipeTransform {
+  transform(allHeroes: Flyer[]) {
+    return allHeroes.filter(hero => hero.canFly);
+  }
+}
+```
+
+**引用** 是Angular关心的： *对象的引用变化了，Angular才可以检测到值的变化*
+
+#### 纯(pure)管道与非纯(impure)管道
+
+默认情况下管道都是纯的，通过管道的 ` pure ` 标志属性设置为 ` false ` 制做一个非纯管道
+
+```ts
+@Pipe({
+  name: 'flyingHeroesImpure',
+  pure: false
+})
+```
+
+###### 纯管道
+Angular 只有检测到输入值发生了 *纯变更* 时才会执行 *纯管道* 。 *纯变更* 是指原始类型(String Number Boolean Symbol)值得变更；或者对象的引用的变更。
+
+**注意：** Angular 会忽略(复合)对象的 *内部* 的更改。
+
+###### 非纯管道
+
+Angular会在每个组件变更检测周期中执行 *非纯管道* 。非纯管道可被调用很多次，和每个按键或每次鼠标移动一样频繁。
+
+在本例中可以直接从 ` FlyingHeroesPipe ` 继承来实现 *非纯管道* ` FlyingHeroesImpurePipe `
+
+```ts
+@Pipe({
+  name: 'flyingHeroesImpure',
+  pure: false
+})
+export class FlyingHeroesImpurePipe extends FlyingHeroesPipe {}
+```
+
+
+###### 非纯 ` AsyncPipe `
+Angular的 ` AsyncPipe ` 有趣的非纯管道例子。 ` AsyncPipe ` 接收 ` Promise ` 或者 ` Obserable ` 做为输入，自动订阅这个输入，最终返回它们给出的值。
+
+ ` AsyncPipe ` 管道是有状态的。 该管道维护着一个所输入的 ` Obserable ` 的订阅，并且持续从那个 ` Obserable ` 中发出新到的值。
+
+```ts
+import { Component } from '@angular/core';
+
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/take';
+
+@Component({
+  selector: 'hero-message',
+  template: `
+    <h2>Async Hero Message and AsyncPipe</h2>
+    <p>Message: {{ message$ | async }}</p>
+    <button (click)="resend()">Resend</button>`,
+})
+export class HeroAsyncMessageComponent {
+  message$: Observable<string>;
+
+  private messages = [
+    'You are my hero!',
+    'You are the best hero!',
+    'Will you be my hero?'
+  ];
+
+  constructor() { this.resend(); }
+
+  resend() {
+    this.message$ = Observable.interval(500)
+      .map(i => this.messages[i])
+      .take(this.messages.length);
+  }
+}
+```
+
+这个Async管道节省了组件的样板代码。 组件不用订阅这个异步数据源，而且不用在被销毁时取消订阅(如果订阅了而忘了反订阅容易导致隐晦的内存泄露)。
+
+###### 一个非纯而且带缓存的管道
+
+一个向服务器发起HTTP请求的管道。
+
+```ts
+import { Pipe, PipeTransform } from '@angular/core';
+import { Http }                from '@angular/http';
+
+import 'rxjs/add/operator/map';
+
+@Pipe({
+  name: 'fetch',
+  pure: false
+})
+export class FetchJsonPipe  implements PipeTransform {
+  private cachedData: any = null;
+  private cachedUrl = '';
+
+  constructor(private http: Http) { }
+
+  transform(url: string): any {
+    if (url !== this.cachedUrl) {
+      this.cachedData = null;
+      this.cachedUrl = url;
+      this.http.get(url)
+        .map( result => result.json() )
+        .subscribe( result => this.cachedData = result );
+    }
+
+    return this.cachedData;
+  }
+}
+```
+
+演示：
+
+```ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'hero-list',
+  template: `
+    <h2>Heroes from JSON File</h2>
+
+    <div *ngFor="let hero of ('heroes.json' | fetch) ">
+      {{hero.name}}
+    </div>
+
+    <p>Heroes as JSON:
+      {{'heroes.json' | fetch | json}}
+    </p>`
+})
+export class HeroListComponent { }
+```
+
+请求数据的过程：
+- 每个绑定都有它自己的管道实例。
+- 每个管道实例都缓存了它自己的URL和数据。
+- 每个管道实例都只调用一次服务器。
+
+
+###### JsonPipe
+` JsonPipe ` 把数据转为JSON格式，内置管道。
+
+###### 纯管道与纯函数
+**纯函数** 是指在处理输入并返回结果时，不会产生任何副作用的函数。 给定相同的输入，它们总是返回相同的输出。
+
+一个 **纯管道** 必须总是用 **纯函数** 实现。
+
+##### 附录：没有 *FilterPipe* 或者 *OrderByPipe*
+
+Angular没有这2个管道：
+- 性能堪忧
+- 阻止激进的代码最小化
+
+
+***
+#### 动画
+##### 概述
+
+ > Angular动画基于标准的 Web动画API构建，在支持此API的浏览器中会用原生方式工作。
+
+> 其他的则需要 ployfill , animations.min.js
+
+
+##### 起步范例
+
+##### 状态与转场
+
+##### 示例：进场与离场
+
+##### 范例：不同状态下进场和离场
+
+
+##### 可动的(Animatable)属性与单位
+
+
+##### 自动属性值计算
+
+##### 动画时间线
+
+##### 基于关键帧(Keyframes)的多阶段动画
+
+##### 并行动画(Group)
+
+
+##### 动画回调
+
+
+
+***
+### 表单
+
+***
+### 引导启动
+
+***
+### NgModules
+
+***
+### 依赖注入
+
+***
+### HttpClient
+
+***
+### 路由与导航
+
+***
+### 测试
+
+***
+### 速查表
+
+***
+## 其他技术
 
 
 
