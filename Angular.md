@@ -1056,6 +1056,157 @@ Angular没有这2个管道：
 
 ***
 ### 表单
+#### 用户输入
+
+使用Angular事件绑定语法将DOM事件绑定到事件处理器。
+
+##### 绑定到用户输入事件
+
+将DOM事件的名字包裹在圆括号中，用放在引号中模板语法对它赋值；
+
+```ts
+<button (click)="onClickMe()">Click me!</button>
+```
+
+##### 通过 ` $event ` 获取用户输入
+
+监听 ` keyup ` 事件，将整个事件 ` $event ` 传递给组件处理器
+
+```ts
+template: `
+  <input (keyup)="onKey($event)">
+  <p>{{values}}</p>
+`
+
+
+-----------
+
+export class KeyUpComponent_v1 {
+  values = '';
+
+  onKey(event: any) { // without type info
+    this.values += event.target.value + ' | ';
+  }
+}
+```
+
+所有的DOM事件对象都有 ` target ` 属性，引用触发该事件的元素。
+
+**注意：** 不要把整个DOM事件传入方法中，只有需要知道了解这些细节是才去提取这些信息。
+
+##### 从一个模板引用变量中获得用户输入
+
+使用Angular的模板引用变量是另一种获取用户数据的方式——(` #teampleVar `)
+
+```ts
+@Component({
+  selector: 'loop-back',
+  template: `
+    <input #box (keyup)="0">
+    <p>{{box.value}}</p>
+  `
+})
+export class LoopbackComponent { }
+```
+
+**注意一定要绑定事件否则无法正常工作**
+
+
+
+##### 按键事件过滤(通过 key.enter )
+Angular的 ` key.enter ` 模拟事件——当用户敲回车时，Angular才会调用事件处理器。
+
+
+##### 失去焦点事件(blur)
+
+` <input (blur)="update(box.value)"> `
+
+##### 把它们放在一起
+
+```ts
+@Component({
+  selector: 'little-tour',
+  template: `
+    <input #newHero
+      (keyup.enter)="addHero(newHero.value)"
+      (blur)="addHero(newHero.value); newHero.value='' ">
+
+    <button (click)="addHero(newHero.value)">Add</button>
+
+    <ul><li *ngFor="let hero of heroes">{{hero}}</li></ul>
+  `
+})
+export class LittleTourComponent {
+  heroes = ['Windstorm', 'Bombasto', 'Magneta', 'Tornado'];
+  addHero(newHero: string) {
+    if (newHero) {
+      this.heroes.push(newHero);
+    }
+  }
+}
+```
+
+
+##### 源代码
+
+
+##### 小结
+
+
+***
+#### 模板驱动表单
+
+
+##### 模板驱动的表单
+
+##### 搭建
+
+##### 创建Hero模型类
+
+##### 创建表单组件
+
+##### 修改app.module.ts
+
+##### 修改app.component.ts
+
+##### 创建初始HTML表单模板
+
+##### 用 ` ngFor ` 添加超能力
+
+##### 使用 ` ngModel ` 进行双向数据绑定
+
+##### 通过 ngModel 跟踪修改状态与有效性验证
+
+##### 添加用于视觉反馈的自定义 CSS
+
+
+
+
+##### 显示和隐藏验证错误信息
+
+
+
+
+##### 使用 ngSubmit 提交该表单
+
+##### 切换两个表单区域（额外的奖励）
+
+
+***
+#### 表单验证
+
+
+***
+#### 响应式表单
+
+
+***
+#### 动态表单
+
+
+
+
+
 
 ***
 ### 引导启动
