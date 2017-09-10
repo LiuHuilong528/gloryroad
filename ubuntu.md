@@ -8,3 +8,5 @@
 
 *   日志查看命令：   
     `cat -n test.log |grep "地形"`  ---查看有包含'地形'的日志
+*   安装下载的 ` .dep ` 文件：
+    > sudo dpkg -i <file>.deb
