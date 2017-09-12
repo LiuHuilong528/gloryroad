@@ -1,3 +1,72 @@
+# AngularCLI
+
+## 安装 ` nvm ` - Node Version Manager
+- `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.4/install.sh | bash`
+- ` nvm install node `  -安装 node
+- ` nvm run --v ` - 运行node的版本
+- ` npm install -g @angular/cli ` 安装  AngularCLI
+
+
+## AngularCLI 使用
+```shell
+# 创建项目
+ng new PROJECT-NAME
+cd PROJECT-NAME
+ng serve
+
+#  运行项目 host 主机 port 端口号
+ng serve --host 0.0.0.0 --port 4201
+
+# component
+ng generate component my-new-component
+ng g component my-new-component # using the alias
+
+# components support relative path generation
+# if in the directory src/app/feature/ and you run
+ng g component new-cmp
+# your component will be generated in src/app/feature/new-cmp
+# but if you were to run
+ng g component ../newer-cmp
+# your component will be generated in src/app/newer-cmp
+# if in the directory src/app you can also run
+ng g component feature/new-cmp
+# and your component will be generated in src/app/feature/new-cmp
+
+```
+
+这样创建的 ` components `, ` directives `  ` pipes `  会自动添加到 ` app.module.ts  ` 中。
+
+
+### 更新AngularCLI
+要先卸载现有的，在更新
+
+```bash
+
+# uninstall
+npm uninstall -g angular-cli
+npm uninstall --save-dev angular-cli
+
+# 更新
+npm uninstall -g @angular/cli
+npm cache clean
+npm install -g @angular/cli@latest
+
+```
+
+全局更新之后，本地的项目包也要更新
+
+```
+rm -rf node_modules dist # use rmdir /S/Q node_modules dist in Windows Command Prompt; use rm -r -fo node_modules,dist in Windows PowerShell
+npm install --save-dev @angular/cli@latest
+npm install
+```
+
+
+
+***
+
+
+
 # Angular Learning
 
 ## 核心知识
