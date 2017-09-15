@@ -95,10 +95,10 @@ private List<String> name = new ArrayList<String>();
   - `$("input[@ name =radio_01][@checked]").val()`;
 
 
-- `$("A B")` 查找A元素下面的所有子节点，包括非直接子节点
+- ` $("A B") ` 查找A元素下面的所有子节点，包括非直接子节点
 
 
-- `$("A>B")` 查找A元素下面的直接子节点
+- ` $("A>B") ` 查找A元素下面的直接子节点
 
 
 - `$("A+B")` 查找A元素后面的兄弟节点，包括非直接子节点

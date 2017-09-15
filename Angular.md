@@ -1264,14 +1264,453 @@ export class LittleTourComponent {
 ***
 #### 表单验证
 
+##### 模板驱动验证
+模板驱动验证表单添加验证机制，需要添加验证属性；可以通过 ` ngModel ` 导出成局部模板变量来查看空间的状态：
+
+``` html
+<input id="name" name="name" class="form-control"
+       required minlength="4" forbiddenName="bob"
+       [(ngModel)]="hero.name" #name="ngModel" >
+
+<div *ngIf="name.invalid && (name.dirty || name.touched)"
+     class="alert alert-danger">
+
+  <div *ngIf="name.errors.required">
+    Name is required.
+  </div>
+  <div *ngIf="name.errors.minlength">
+    Name must be at least 4 characters long.
+  </div>
+  <div *ngIf="name.errors.forbiddenName">
+    Name cannot be Bob.
+  </div>
+
+</div>
+```
+##### 响应式表单的验证
+应该在组件类中直接报验证器函数添加到表单控件模型上（` FormControl `）
+
+###### 验证器函数
+2种验证器函数：    
+  - 同步验证器函数： 接收一个空件实例，返回一组验证错误或null，可在实例化  ` FormControl ` 时作为构造函数的第二个参数传进去。
+  - 异步验证函数：接收空间实例，返回 ` Promise ` 或 ` Obserable ` 对象。稍后返回一组验证错误或 ` null ` ,实例化 ` FormControl ` 的第三个构造参数。
+
+  **注意：** 所有的同步验证器通过后，Angular在运行异步验证器。每一个验证器执行完后，才会设置验证错误。
+
+
+###### 内部验证器
+模板驱动表单中可用的属性型验证器（` required ` ` minlength `）对应于 ` Validators ` 类中的同名函数。
+
+响应式表单——可以使用内置验证器，但是使用函数形式：
+
+``` ts
+ngOnInit(): void {
+  this.heroForm = new FormGroup({
+    'name': new FormControl(this.hero.name, [
+      Validators.required,
+      Validators.minLength(4),
+      forbiddenNameValidator(/bob/i) // <-- Here's how you pass in the custom validator.
+    ]),
+    'alterEgo': new FormControl(this.hero.alterEgo),
+    'power': new FormControl(this.hero.power, Validators.required)
+  });
+}
+
+get name() { return this.heroForm.get('name'); }
+
+get power() { return this.heroForm.get('power'); }
+```
+
+注意：
+- 可以通过把函数放入数组中传入，这样支持多中验证器
+- 响应式表单中，通过表单所属的控件组(` FormGroup `) 的 ` get ` 方法访问表单控件，也会为模板定义一些getter做为间断形式。
+
+##### 自定义验证器
+内部验证器不可适用所有场所，还是的创建自定义的验证器；` forbiddenNameValidator ` 函数的代码：
+``` ts
+/** A hero's name can't match the given regular expression */
+export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
+  return (control: AbstractControl): {[key: string]: any} => {
+    const forbidden = nameRe.test(control.value);
+    return forbidden ? {'forbiddenName': {value: control.value}} : null;
+  };
+}
+```
+
+###### 添加响应式表单
+直接将验证器函数传给 ` FormControl ` 即可：
+
+###### 添加到模板驱动表单
+
+1. 自定义的 **验证器函数**
+2. 自定义验证器函数的包装器——如： ` ForbiddenValidatorDirective `
+3. 选择器添加到输入框中就可以激活验证器
+
+``` ts
+@Directive({
+  selector: '[forbiddenName]',
+  providers: [{provide: NG_VALIDATORS, useExisting: ForbiddenValidatorDirective, multi: true}]
+})
+export class ForbiddenValidatorDirective implements Validator {
+  @Input() forbiddenName: string;
+
+  validate(control: AbstractControl): {[key: string]: any} {
+    return this.forbiddenName ? forbiddenNameValidator(new RegExp(this.forbiddenName, 'i'))(control)
+                              : null;
+  }
+}
+```
+
+``` html
+<input id="name" name="name" class="form-control"
+       required minlength="4" forbiddenName="bob"
+       [(ngModel)]="hero.name" #name="ngModel" >
+```
+
+
+
+##### 表示控件状态的 ` CSS `类
+Angular自动把控件属性做为CSS类映射到控件所在的元素，方便添加元素样式：
+- ` ng-valid `
+- ` ng-invalid `
+- ` ng-pending `
+- ` ng-pristing `
+- ` ng-dirty `
+- ` ng-untouched `
+- ` ng-touched `
+
+``` CSS
+.ng-valid[required], .ng-valid.required  {
+  border-left: 5px solid #42A948; /* green */
+}
+
+.ng-invalid:not(form)  {
+  border-left: 5px solid #a94442; /* red */
+}
+```
+
 
 ***
 #### 响应式表单
+##### 响应式表单简介
+Angualr2种构建表单技术：
+- 响应式表单
+- 模板驱动表单
+
+以上都属于 ` @angular/forms ` 库，并共享一组公共的表单控件，但设计哲学、编程风格和具体技术上显著不同；都有自己的模块： ` ReactiveFormsModule ` 和 ` FormsModule `
+
+**异步 VS 同步** ：响应式表单是同步的，模板驱动表单是异步的；
+
+
+##### 准备工作
+##### 创建数据模型
+##### 创建响应式表单组件
+##### 创建模板
+##### 导入 ` ReactiveFormsModule `
+##### 显示 ` HeroDetailComponent `
+
+###### 基础表单类
+
+- ` AbstractControl ` 是三个具体表单类的抽象类，为它们提供共同的行为和属性，其中有些事可观察对象（ ` Obserable `）
+- ` FormControl ` 跟踪一个 *单独* 表单控件的值和有效性状态。对应一个HTML表单控件，如：下拉框和输入框。
+- ` FormGroup ` 跟踪一组 ` AbstractControl ` 的实例的值和有效性状态。该组的属性中包含了它的子控件。组件中的顶级表单就是 ` FormGroup `
+- ` FormArray ` 跟踪 ` AbstractControl ` 实例组成的有序数组和有效性状态。
+
+
+##### 添加 ` FormGroup `
+
+##### 表单模型概览
+
+###### ` FormBuilder ` 简介
+` FormBuilder ` 在处理控件创建的细节问题帮助减少重复劳动：
+
+``` ts
+export class HeroDetailComponent3 {
+  heroForm: FormGroup; // <--- heroForm is of type FormGroup
+
+  constructor(private fb: FormBuilder) { // <--- inject FormBuilder
+    this.createForm();
+  }
+
+  createForm() {
+    this.heroForm = this.fb.group({
+      name: '', // <--- the FormControl called "name"
+    });
+  }
+}
+```
+
+``` HTML
+<h2>Hero Detail</h2>
+<h3><i>A FormGroup with multiple FormControls</i></h3>
+<form [formGroup]="heroForm" novalidate>
+  <div class="form-group">
+    <label class="center-block">Name:
+      <input class="form-control" formControlName="name">
+    </label>
+  </div>
+  <div class="form-group">
+    <label class="center-block">Street:
+      <input class="form-control" formControlName="street">
+    </label>
+  </div>
+  <div class="form-group">
+    <label class="center-block">City:
+      <input class="form-control" formControlName="city">
+    </label>
+  </div>
+  <div class="form-group">
+    <label class="center-block">State:
+      <select class="form-control" formControlName="state">
+          <option *ngFor="let state of states" [value]="state">{{state}}</option>
+      </select>
+    </label>
+  </div>
+  <div class="form-group">
+    <label class="center-block">Zip Code:
+      <input class="form-control" formControlName="zip">
+    </label>
+  </div>
+  <div class="form-group radio">
+    <h4>Super power:</h4>
+    <label class="center-block"><input type="radio" formControlName="power" value="flight">Flight</label>
+    <label class="center-block"><input type="radio" formControlName="power" value="x-ray vision">X-ray vision</label>
+    <label class="center-block"><input type="radio" formControlName="power" value="strength">Strength</label>
+  </div>
+  <div class="checkbox">
+    <label class="center-block">
+      <input type="checkbox" formControlName="sidekick">I have a sidekick.
+    </label>
+  </div>
+</form>
+<p>Form value: {{ heroForm.value | json }}</p>
+```
+
+ 注意 ` formGroupName ` 和 ` formControlName ` 属性。 他们是Angular指令，用于把相应的HTML控件绑定到组件中的 *FormGroup* 和 *FormControl* 类型的属性上。
+
+
+###### 多级 ` FromGroup `
+
+` address ` 是个名称为 ' address ' 的子 ` FormGroup `
+
+``` ts
+export class HeroDetailComponent5 {
+  heroForm: FormGroup;
+  states = states;
+
+  constructor(private fb: FormBuilder) {
+    this.createForm();
+  }
+
+  createForm() {
+    this.heroForm = this.fb.group({ // <-- the parent FormGroup
+      name: ['', Validators.required ],
+      address: this.fb.group({ // <-- the child FormGroup
+        street: '',
+        city: '',
+        state: '',
+        zip: ''
+      }),
+      power: '',
+      sidekick: ''
+    });
+  }
+}
+```
+
+HTML中 ` <div formGroupName="address" class="well well-lg">..</div> ` 的是 address 的 ` FormGroup `
+
+``` html
+<h2>Hero Detail</h2>
+<h3><i>A FormGroup with multiple FormControls</i></h3>
+<form [formGroup]="heroForm" novalidate>
+  <div class="form-group">
+    <label class="center-block">Name:
+      <input class="form-control" formControlName="name">
+    </label>
+  </div>
+  <div formGroupName="address" class="well well-lg">
+    <h4>Secret Lair</h4>
+    <div class="form-group">
+      <label class="center-block">Street:
+      <input class="form-control" formControlName="street">
+    </label>
+    </div>
+    <div class="form-group">
+      <label class="center-block">City:
+      <input class="form-control" formControlName="city">
+    </label>
+    </div>
+    <div class="form-group">
+      <label class="center-block">State:
+      <select class="form-control" formControlName="state">
+          <option *ngFor="let state of states" [value]="state">{{state}}</option>
+      </select>
+    </label>
+    </div>
+    <div class="form-group">
+      <label class="center-block">Zip Code:
+      <input class="form-control" formControlName="zip">
+    </label>
+    </div>
+  </div>
+  <div class="form-group radio">
+    <h4>Super power:</h4>
+    <label class="center-block"><input type="radio" formControlName="power" value="flight">Flight</label>
+    <label class="center-block"><input type="radio" formControlName="power" value="x-ray vision">X-ray vision</label>
+    <label class="center-block"><input type="radio" formControlName="power" value="strength">Strength</label>
+  </div>
+  <div class="checkbox">
+    <label class="center-block">
+      <input type="checkbox" formControlName="sidekick">I have a sidekick.
+    </label>
+  </div>
+</form>
+<p>Form value: {{ heroForm.value | json }}</p>
+```
+
+##### ` FormBulder ` 简介
+##### 查看 ` FormControl ` 的属性
+
+``` html
+<!-- 获取 FormControl 的状态 -->
+<p>Name value: {{ heroForm.get('name').value }}</p>
+<!-- 获取 FromGroup 中的 FormControl 的状态 -->
+<p>Street value: {{ heroForm.get('address.street').value}}</p>
+```
+
+##### 数据模型和表单模型
+
+*数据模型* 的值复制到 *表单模型* 中哦你，注意：
+- 理解数据模型映射到表单模型中的属性
+- 修改的数据流是从 DOM 流向表单模型，表单控件永远不会修改数据模型
+
+
+
+##### 使用 ` setValue ` 和 ` patchValue ` 操纵表单模型
+
+` setValue ` 和 ` patchValue ` 可用在控件初始化或重置上。
+
+###### ` setValue ` 方法
+` setValue ` *立即* 设置 *每个表单* 控件的值，数据模型与表单模型要匹配
+
+``` ts
+this.heroForm.setValue({
+  name:    this.hero.name,
+  address: this.hero.addresses[0] || new Address()
+});
+```
+
+` setValue ` 会在赋值前检查数据对象的值，任何与 ` FormGroup `结构不同或缺少表单组件中任何一个空间的数据对象都不会接收；会有错误信息返回，而 ` patchValue ` 会默默失败。
+
+` setValue ` 会捕获错误，并报告。
+
+###### ` patchValue ` 方法
+
+` patchValue ` 可以修改 ` FormGroup ` 控件中部分属性值，可以解决数据模型和表单模型之间的差异，不会检查缺失的控件值，不会抛出有用的错误信息。
+
+``` ts
+this.heroForm.patchValue({
+  name: this.hero.name
+});
+```
+
+##### 使用 ` FormArray ` 来表示 ` FormGroup ` 数组
+
+` FormArray ` 可以显示的是一个数组的 ` FormGroup `
+
+使用 ` FormArray ` :
+- 数组中定义条目（` FormGroup ` 和 ` FromControl `）
+- 数组初始化为一组从数据模型中的数据创建的条目
+- 根据需求添加或移除条目
+
+
+``` ts
+this.heroForm = this.fb.group({
+  name: ['', Validators.required ],
+  secretLairs: this.fb.array([]), // <-- secretLairs as an empty FormArray
+  power: '',
+  sidekick: ''
+});
+
+setAddresses(addresses: Address[]) {
+  const addressFGs = addresses.map(address => this.fb.group(address));
+  const addressFormArray = this.fb.array(addressFGs);
+  this.heroForm.setControl('secretLairs', addressFormArray);
+}
+```
+
+` FormGroup.setControl `方法，不是 ` setValue ` 方法设置值，因为我们要替换的是 *控件* ,而不是 *控件值* 。
+
+**注意：** ` FormGroup.get('FormArrayName') as FormArray; ` 可以获得 ` FormArray ` .
+FormArray 的展示：
+
+``` html
+<div formArrayName="secretLairs" class="well well-lg">
+  <div *ngFor="let address of secretLairs.controls; let i=index" [formGroupName]="i" >
+    <!-- The repeated address template -->
+    <h4>Address #{{i + 1}}</h4>
+    <div style="margin-left: 1em;">
+      <div class="form-group">
+        <label class="center-block">Street:
+          <input class="form-control" formControlName="street">
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="center-block">City:
+          <input class="form-control" formControlName="city">
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="center-block">State:
+          <select class="form-control" formControlName="state">
+            <option *ngFor="let state of states" [value]="state">{{state}}</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="center-block">Zip Code:
+          <input class="form-control" formControlName="zip">
+        </label>
+      </div>
+    </div>
+    <br>
+    <!-- End of the repeated address template -->
+  </div>
+</div>
+```
+
+##### 监视控件的变化
+` ngOnChanges ` 只会检查变量是否被重新赋值，变量的属性值变化则不会检查；
+监测表单控件值得变化，可以使用 ` FormControl.valueChanges `
+
+``` ts
+nameChangeLog: string[] = [];
+logNameChange() {
+  const nameControl = this.heroForm.get('name');
+  nameControl.valueChanges.forEach(
+    (value: string) => this.nameChangeLog.push(value)
+  );
+}
+```
+
+``` html
+<h4>Name change log</h4>
+<div *ngFor="let name of nameChangeLog">{{name}}</div>
+```
+
+##### 保存表单的数据
+##### 总结
 
 
 ***
 #### 动态表单
 
+##### 程序启动
+##### 问卷问题模型
+##### 问卷表单组件
+##### 问卷数据
+##### 动态模板
 
 
 
@@ -1280,8 +1719,124 @@ export class LittleTourComponent {
 ***
 ### 引导启动
 
+``` ts
+import { NgModule }      from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppComponent }  from './app.component';
+
+@NgModule({
+  imports:      [ BrowserModule ],
+  declarations: [ AppComponent ],
+  bootstrap:    [ AppComponent ]
+})
+export class AppModule { }
+```
+
+` @NgModule `装饰器将 ` AppModule `标记为Angular模块类；` @NgModule `参数：
+- ` imports ` ——引入应用在浏览器运行需要的 **模块** ; 只能有 ` NgModule `类不要放其他的类。
+- ` declarations `——声明模块的 **组件** ，包括根组件
+- ` bootstrap  `——声明 **根组件** ，Angular会创建并插入到 ` index.html ` 页面中
+- ` providers ` ——声明依赖，服务提供类- **服务类**
+
+#### ` imports `数组
+#### ` declarations ` 数组
+` declarations ` 告诉Angular 哪些组件属于本模块；
+
+>只有\*可以声明的 — *组件* 、 *指令* 和 *管道*  — 属于 ` declarations ` 数组。 不要将其他类型的类添加到 `declarations` 中，例如 ` NgModule` 类, 服务类，模型类。
+
+
+#### ` bootstrap `数组
+` bootstrap `数组在 引导启动过程中，将数组的组件类创建组件，然后插入浏览器DOM中。
+
+#### ` main。ts `引导
+JIT——即时编译器
+
+引导JIT的浏览器应用的推荐地点是 ` src/main.ts `文件
+```ts
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { AppModule }              from './app/app.module';
+
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+#### 关于Angular模块更多知识
+
 ***
 ### NgModules
+#### NgModule
+##### Angular模块 (NgModule)
+##### Angular模块化
+
+##### ` AppModule ` -应用的根模块
+##### 在 ` main.ts ` 中引导
+Angular提供了许多引导选项,以下是其中的二种：
+
+**即时（JiT）编译** -动态编译
+
+``` ts
+// The browser platform with a compiler
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+
+// The app module
+import { AppModule } from './app/app.module';
+
+// Compile and launch the module
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+
+**预编译器（AoT-Ahead-Of-Time）** -静态编译
+
+静态方案能生成更小、启动更快的应用，推荐优先使用。
+
+使用 *静态* 选项，Angular编译器作为构建流程的一部分提前运行，生成一组类工厂。核心是： ` AppModuleNgFactory `
+
+```ts
+// The browser platform without a compiler
+import { platformBrowser } from '@angular/platform-browser';
+
+// The app module factory produced by the static offline compiler
+import { AppModuleNgFactory } from './app/app.module.ngfactory';
+
+// Launch with the app module factory.
+platformBrowser().bootstrapModuleFactory(AppModuleNgFactory);
+```
+
+无论是 ` JiT ` 还是 ` AoT ` 编译器都会从同一份 ` AppModule ` 源码中生成一个 ` AppModuleNgFactory ` 类。 ` JiT ` 编译器动态地在浏览器的内存中创建这个工厂类。 ` AoT ` 编译器把工厂输出成一个物理文件，也就是我们在静态版本 ` main.ts ` 中导入的那个。
+
+##### 声明指令和组件
+
+##### 服务提供商
+
+##### 导入支持性模块
+2个指令同名时，在 ` import ` 时使用 ` as ` 关键字为第二指令创建别名就可以：
+
+``` ts
+import {
+  HighlightDirective as ContactHighlightDirective
+} from './contact/highlight.directive';
+```
+
+##### 解决指令冲突
+
+##### 特性模块
+
+##### 用路由器实现懒（Lazy）加载
+
+##### 共享模块
+
+##### 核心（Core）模块
+
+##### 清理
+
+##### 用 ` CoreModule.forRoot ` 配置核心服务
+
+##### 禁止多次导入  ` CoreModule `
+
+##### 总结
+
+
+
 
 ***
 ### 依赖注入
