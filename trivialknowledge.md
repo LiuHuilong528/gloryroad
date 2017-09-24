@@ -153,7 +153,8 @@ private List<String> name = new ArrayList<String>();
   ` <query_clause>^=<score>` 剔除无关的信息；
 
 ### Facet 查询
-
+1. ` facet  ` 为true时进行facet（切片）查询
+2. ` facet.query `
 
 ## 数据库
 ### MySQL
