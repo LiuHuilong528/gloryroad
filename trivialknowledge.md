@@ -108,12 +108,6 @@ private List<String> name = new ArrayList<String>();
 
 
 
-# Maven
-`mvn install -Dmaven.test.skip=true`  -- 跳过test 编译
-
-`mvn eclipse:eclipse` --创建IDE工程文件
-
-
 # Solr
 **solr通用查询参数：**     
 * defType  查询解析器   
@@ -156,13 +150,259 @@ private List<String> name = new ArrayList<String>();
 1. ` facet  ` 为true时进行facet（切片）查询
 2. ` facet.query `
 
+
+
+## JavaTools
+### Maven
+
+`mvn install -Dmaven.test.skip=true`  -- 跳过test 编译
+
+`mvn eclipse:eclipse` --创建IDE工程文件
+
+` mvn archetype:generate -DgroupId=com.lhl -DartifactId=mave-learn -Dpachage=com.lhl.mavenlearning -Dversion=1.0-SNAPSHOT ` 命令分析如下：      
+1. ` mvn `  调用Maven命令工具
+2. `  archetype:generate ` 调用一个MavenGoal，而 ` archetype ` 定义了许多模板， `  archetype:generate ` 将会列出许多的模板供我们选择
+3. ` -DgroupId=com.lhl -DartifactId=mave-learn -Dpachage=com.lhl.mavenlearning -Dversion=1.0-SNAPSHOT   `  分别对应：组织名称、项目名称、java包名、项目的版本号;
+
+` mvn install ` 做的事情比较多：编译、测试、打包和安装到本地仓库。
+
+#### Core Concepts
+- Maven Plugins and Goals       
+  ` mvn archetype:generate ` archetype-是插件（Plugins） ` generate ` -是Goals; **Plugins是一个或一系列goals的集合** ;在上例中带 ` -D... ` 都是此命令的参数
+- Maven生命周期      
+  ` mvn install ` 包含了几个Maven生命周期：     
+  1. ` resources:resources `
+  2. ` compiler:compile `
+  3. ` resources:testResources `
+  4. ` compiler:testCompile `
+  5. ` surefire:test `
+  6. ` jar:jar `       
+
+在每个生命周期都有一个goal对应着
+- Maven配置
+- Maven仓库
+- Maven依赖管理
+- 站点生成和报告
+
+` $ mvn exec:java -Dexec.mainClass=org.sonatype.mavenbook.weather.Main \ -Dexec.arg="12044"` 运行jar包
+
+` mvn help:describe -Dplugin=exec -Dfull ` mvn hel 查看exec插件
+
+` mvn dependency:tree `  或者 ` mvn dependency:resolve `
+
+` mvn install -Dmaven.test.skip=true ` 跳过测试
+` mvn install -X ` debug模式
+
+
+
+``` shell
+mvn archetype:generate \
+  -DgroupId=org.sonatype.mavenbook.simpleweb \
+  -DartifactId=simple-webapp \
+  -Dpackage=org.sonatype.mavenbook \
+  -Dversion=1.0-SNAPSHOT  \
+  -DarchetypeCatalog=internal `
+```
+
+
+
+普通项目 ` pom.xml `
+
+
+
+```
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.sonatype.mavenbook.custom</groupId>
+	<artifactId>simple-weather</artifactId>
+	<version>1.0</version>
+	<packaging>jar</packaging>
+
+	<name>simple-weather</name>
+	<url>http://maven.apache.org</url>
+
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>Sonatype</name>
+		<url>http://www.sonatype.com</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>jason</id>
+			<name>Jason Van Zyl</name>
+			<email>jason@maven.org</email>
+			<url>http://www.sonatype.com</url>
+			<organization>Sonatype</organization>
+			<organizationUrl>http://www.sonatype.com</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+		</developer>
+	</developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+		</dependency>
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.5</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<!-- Compiler Configuration -->
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<!-- Unit Test Configuration -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+					<testFailureIgnore>true</testFailureIgnore>
+				</configuration>
+			</plugin>
+			<!-- 將依賴打入包中 -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<!-- 将assembly 与 package 生命周期绑定 -->
+					<execution>
+						<id>simple-command</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+
+```
+
+` web pom.xml `
+
+
+```html
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.sonatype.mavenbook.simpleweb</groupId>
+	<artifactId>simple-webapp</artifactId>
+	<packaging>war</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name>simple-webapp Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<finalName>simple-webapp</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<!-- jetty插件 将web项目打成可执行 mvn jetty:run -->
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>maven-jetty-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+```
+
+
 ## 数据库
 ### MySQL
 `select user();`  - 查看当前用户
-`select database();` -- 查看当前数据库
+
+`select database();`  -- 查看当前数据库
+
 `net start mysql`   -- dos 启动
+
 `mysql -h localhost -u root -p password`  - 登录指定服务器、用户、密码
+
 `CREATE DATABASE IF NOT EXISTS shiro DEFAULT CHARSET utf8 COLLATE utf8_general_ci;`  -- 创建数据库，指定字符集UTF-8
+
 `drop database shiro`  --删除数据库 shiro
 
 `source filepath.sql`   执行数据库sql 脚本
