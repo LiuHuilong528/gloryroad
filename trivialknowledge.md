@@ -23,7 +23,7 @@ private List<String> name = new ArrayList<String>();
 //这样就可以接到数据了
 ```
 
-* `Comparator` 中 `a.compareTo(b)` :    
+* ` Comparator `  中 ` a.compareTo(b) ` :    
   `1`  -> b a   
   `0`  -> a b   
   `-1` -> a b
@@ -87,8 +87,8 @@ private List<String> name = new ArrayList<String>();
   - `$("input[@ name =S_03_22]").parent().prev().text()`
 
 
-- 名字以"S_"开始，并且不是以"_R"结尾的    
-  - `$("input[@ name ^='S_']").not("[@ name $='_R']")`
+- 名字以"S_"开始，并且不是以"\_R"结尾的         
+  - ` $("input[@ name ^='S_']").not("[@ name $='_R']") `
 
 
 - 一个名为 `radio_01`的`radio`所选的值
