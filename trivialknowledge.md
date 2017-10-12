@@ -184,7 +184,7 @@ private List<String> name = new ArrayList<String>();
 - Maven依赖管理
 - 站点生成和报告
 
-` $ mvn exec:java -Dexec.mainClass=org.sonatype.mavenbook.weather.Main \ -Dexec.arg="12044"` 运行jar包
+` $ mvn exec:java -Dexec.mainClass=org.sonatype.mavenbook.weather.Main \ -Dexec.arg="12044" ` 运行jar包
 
 ` mvn help:describe -Dplugin=exec -Dfull ` mvn hel 查看exec插件
 
@@ -201,7 +201,7 @@ mvn archetype:generate \
   -DartifactId=simple-webapp \
   -Dpackage=org.sonatype.mavenbook \
   -Dversion=1.0-SNAPSHOT  \
-  -DarchetypeCatalog=internal `
+  -DarchetypeCatalog=internal
 ```
 
 
@@ -210,7 +210,7 @@ mvn archetype:generate \
 
 
 
-```
+```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -338,7 +338,7 @@ mvn archetype:generate \
 ` web pom.xml `
 
 
-```html
+```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>

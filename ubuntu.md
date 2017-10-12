@@ -26,3 +26,10 @@
     # 添加  dev  ALL=(ALL) ALL
     chmod -v u-w /etc/sudoers  --改为只读
   ```
+
+- 修改密码     
+  ```bash
+  passwd userName
+  # 接下来输入新密码
+
+  ```

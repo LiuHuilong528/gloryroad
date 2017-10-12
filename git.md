@@ -31,7 +31,7 @@ _注意_:此命令并不提交代码到仓库，只是将之前在版本管理�
 *   创建、切换分支
     > `git checkout -b branchname` --创建分支 并切换到创建的分支下
 
-    > `git branch branchname`  `git checkout branchname` 同上一样的效果
+    > `git branch branchname`  ` git checkout branchname `  同上一样的效果
 
 *   `git merge --no-ff branchA` --合并分支;将branchA合并到主干
 
