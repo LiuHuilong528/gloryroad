@@ -38,6 +38,82 @@ private List<String> name = new ArrayList<String>();
 * `Clock` : 用于访问当前时刻、日期、时间，用到时区
 * `Duration` : 用秒和纳秒表示时间的数量
 
+### Spring Boot
+Spring Boot 四个核心：
+- 自动配置 ——基于 Spring的条件化配置特性，spring-boot-autoconfigure.jar包含许多配置类
+- 起步（starter）依赖 ——jar自动导入
+- 命令行界面 ——开发脚手架
+- Actuator ——监控
+
+#### 自动配置
+spring-boot-autoconfigure.jar 包含许多配置类，实现了 ` Condition ` 接口，覆盖 ` matches() ` 方法。
+
+** 3.2 通过属性文件外置配置 **
+可以使用 ` application.properties ` 文件，或者 ` application.yaml ` 除此外还有：
+1. 命令行参数
+2. ` java:comp/env ` 里的JNDI属性
+3. JVM系统属性
+4. 操作系统环境变量
+5. 随机生成的带 random.* 前缀的属性；例如：` ${random.long} `
+6. 程序外的 ` application.properties ` 或者 ` application.yml ` 文件
+7. 打包在应用程序内的 `application.properties` 或者 ` appliaction.yml ` 文件
+8. 通过 ` @PropertySource ` 标注的属性源
+9. 默认属性
+
+
+` @SpringApplicationConfiguration ` 用法和 ` @ContextConfiguration ` 大致相同,但是它不知加载Spring程序的上下文，还会开启日志、加载外部属性，以及其他Spring Boot特性。
+相当于 ` @Configuration ` , ` @EnableAutoConfiguration ` , ` @ComponentScan ` 三者组合。
+
+` @EnableAutoConfiguration ` 是Boot 的特有注解,这个注解在其他包之上，这样它会默认扫描子包下的组件。
+
+` @WebAppConfiguration ` 表明是个 ` WebApplicationContext `
+
+` spring-boot-starter-jetty ` 和 ` spring-boot-starter-tomcat ` 是Spring Boot 的内嵌的 ` jetty ` 和 ` tomcat `
+
+` @Import ` 和 ` @ImportResource ` 可以加载额外的配置项内容
+
+` @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class}) ` 可以关闭制定的自动配置项内容
+
+当类路径下的文件有变化时 ， ` spring-boot-devtools ` 会自动重启服务
+
+` @WebMvcTest ` 将会自动配置 SpringMVC 结构，只会扫描 ` @Controller ` , ` @ControllerAdvice ` , ` @JsonComponent` , ` Filter ` ,  `WebMvcConfigurer ` 和 ` HandlerMethodArgumentResolver ` 而普通的 ` @Component ` 不会扫描到。
+
+```java
+@RunWith(SpringRunner.class)
+@WebMvcTest(UserVehicleController.class)
+public class MyControllerTests {
+  @Autowired
+  private MockMvc mvc;
+  @MockBean
+  private UserVehicleService userVehicleService;
+  @Test
+  public void testExample() throws Exception {
+      given(this.userVehicleService.getVehicleDetails("sboot"))
+        .willReturn(new VehicleDetails("Honda", "Civic"));
+      this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
+        .andExpect(status().isOk()).andExpect(content().string("Honda Civic"));
+  }
+}
+```
+
+```java
+@RunWith(SpringRunner.class)
+@WebMvcTest(UserVehicleController.class)
+public class MyHtmlUnitTests {
+  @Autowired
+  private WebClient webClient;
+  @MockBean
+  private UserVehicleService userVehicleService;
+  @Test
+  public void testExample() throws Exception {
+      given(this.userVehicleService.getVehicleDetails("sboot"))
+          .willReturn(new VehicleDetails("Honda", "Civic"));
+      HtmlPage page = this.webClient.getPage("/sboot/vehicle.html");
+      assertThat(page.getBody().getTextContent()).isEqualTo("Honda Civic");
+  }
+}
+
+```
 
 # JQuery
 - 可视化过滤选择器：    
@@ -207,8 +283,6 @@ mvn archetype:generate \
 
 
 普通项目 ` pom.xml `
-
-
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -388,6 +462,12 @@ mvn archetype:generate \
 		</plugins>
 	</build>
 </project>
+```
+
+## IDEA
+在文件中创建不了类或者包：
+```
+  Mark Directory As -> *** Boot
 ```
 
 

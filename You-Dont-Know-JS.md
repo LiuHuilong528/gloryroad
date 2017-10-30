@@ -108,7 +108,7 @@ JS不支持块作用域；
 
 ``` javascript
 for (var i=0; i<10; i++) {
-console.log( i );
+  console.log( i );
 }
 
 ```
@@ -170,28 +170,28 @@ foo(); // 1
 var foo;
 
 function foo() {
-console.log( 1 );
+  console.log( 1 );
 }
 
 foo = function() {
-console.log( 2 );
+  console.log( 2 );
 };
 
 /** 引擎解释如下 **/
 function foo() {
-console.log( 1 );
+  console.log( 1 );
 }
 
 foo(); // 1
 
 foo = function() {
-console.log( 2 );
+  console.log( 2 );
 };
 ```
 ## 作用域闭包
 **闭包** 就是函数能够记住并访问它的词法作用域，即使当这个函数在它的词法作用域之外执行时。
 
-* 内部函数只要被**传递到词法作用域外**，它都将维护一个指向它最开始被声明时的作用域的引用，一旦被执行，闭包就会被行使。
+* 内部函数只要被 **传递到词法作用域外** ，它都将维护一个指向它最开始被声明时的作用域的引用，一旦被执行，闭包就会被行使。
 
 ### 模块化
 
@@ -248,20 +248,20 @@ return {
 foo.doSomething(); // cool
 foo.doAnother(); // 1 ! 2 ! 3
 
-// 这里*立即执行*只能这使用，不能用 `CoolModule()`
+// 这里 *立即执行* 只能这使用，不能用 `CoolModule()`
 ```
 ## 附录A 动态作用域
-**动态作用域**不关心函数和作用域在哪里和如何被声明，而是关心**它们是从何处被调用的**。    
-JavaScript**实际上没有动态作用域**。有词法作用域，但是 `this` 机制和动态作用域类似。
+**动态作用域** 不关心函数和作用域在哪里和如何被声明，而是关心 **它们是从何处被调用的** 。    
+JavaScript **实际上没有动态作用域** 。有词法作用域，但是 `this` 机制和动态作用域类似。
 
 ``` javascript
 function foo() {
-console.log( a ); // 3  (不是 2!)
+  console.log( a ); // 3  (不是 2!)
 }
 
 function bar() {
-var a = 3;
-foo();
+  var a = 3;
+  foo();
 }
 
 var a = 2;
@@ -273,7 +273,7 @@ undefined
 ```
 
 
-词法作用域和动态作用域差异：**词法作用域是编写时的，而动态作用域（和 `this`）是运行时的**。词法作用域关心的是 函数在何处被声明，但是动态作用域关心的是函数 从何处 被调用。
+词法作用域和动态作用域差异：**词法作用域是编写时的，而动态作用域（和 `this`）是运行时的** 。词法作用域关心的是 函数在何处被声明，但是动态作用域关心的是函数 从何处 被调用。
 
 # `this` 与对象原型
 
@@ -338,8 +338,8 @@ undefined
 
 
 ## `this` 解析
-* **调用点**——函数被调用的地方。     
-**调用栈**——达到当前执行位置而被调用的所有方法的堆栈。
+* **调用点** ——函数被调用的地方。     
+**调用栈** ——达到当前执行位置而被调用的所有方法的堆栈。
 
 ``` javascript
 function baz() {
@@ -446,8 +446,9 @@ var bar = new foo(2);
 console.log(bar.a);
 ```
 
-**`this`绑定原则优先级**(低到高)    
+**`this`绑定原则优先级** (低到高)    
 >1.默认 2.隐含绑定 3.`new` 4.硬绑定
+
 ### 判定`this`
 判定`this`按照如下顺序：
 1. 函数是通过`new`调用的吗？ 是则`this` 是新构建的对象;
@@ -457,7 +458,7 @@ console.log(bar.a);
 
 ### 绑定的特例
 - 被忽略的`this`    
-将null、undefined 作为 call apply或bind的this的绑定参数，这些值会被忽略，适用默认绑定规则
+将null、undefined 作为 call apply或bind的this的绑定参数，这些值会被忽略，适用默认绑定规则, 需要的用 ` Object.create(null) `
 - 间接引用
 - 软化绑定
 
@@ -465,19 +466,19 @@ console.log(bar.a);
 箭头函数通过“大箭头”操作符：`=>`与使用四种标准的 `this`不同，箭头函数从封闭它的作用域采用this绑定;
 ```javascript
 function foo() {
-// 返回一个箭头函数 -被函数 foo（）封闭 这里的a就是 调用foo()的对象的a
-return (a) => {
-  // 这里的 `this` 是词法上从 `foo()` 采用的
-	console.log( this.a );
-};
+  // 返回一个箭头函数 -被函数 foo（）封闭 这里的a就是 调用foo()的对象的a
+  return (a) => {
+    // 这里的 `this` 是词法上从 `foo()` 采用的
+  	console.log( this.a );
+  };
 }
 
 var obj1 = {
-a: 2
+  a: 2
 };
 
 var obj2 = {
-a: 3
+  a: 3
 };
 
 var bar = foo.call( obj1 );
@@ -502,10 +503,10 @@ bar.call( obj2 ); // 2, 不是3!
 var myObject = {};
 
 Object.defineProperty( myObject, "a", {
-value: 2,
-writable: true,
-configurable: true,
-enumerable: true
+  value: 2,
+  writable: true,
+  configurable: true,
+  enumerable: true
 } );
 
 myObject.a; // 2
@@ -513,7 +514,7 @@ myObject.a; // 2
 
 
 
-* `writable`控制改变属性值的能力;值是：`false`时对属性值的修改会失败！
+* `writable`控制改变属性值的能力;值是：`false` 时对属性值的修改会失败！
 
 ``` javascript
   var myObject = {};
@@ -558,39 +559,46 @@ myObject.a; // 2
 
 ``` javascript
 var myObject = {
-// 为 `a` 定义一个 getter
-get a() {
-	return 2;
-}
+  // 为 `a` 定义一个 getter
+  get a() {
+  	return 2;
+  }
 };
 
 Object.defineProperty(
-myObject,	// 目标对象
-"b",		// 属性名
-{			// 描述符
-	// 为 `b` 定义 getter
-	get: function(){ return this.a * 2 },
+  myObject,	// 目标对象
+  "b",		// 属性名
+  {			// 描述符
+  	// 为 `b` 定义 getter
+  	get: function(){ return this.a * 2 },
 
-	// 确保 `b` 作为对象属性出现
-	enumerable: true
-}
+  	// 确保 `b` 作为对象属性出现
+  	enumerable: true
+  }
 );
-
 myObject.a; // 2
-
 myObject.b; // 4
 ```
 
 ### 存在性（Existence）
-`in`操作符——属性是否存在于对象中，亦或存在于`[[prototype]]`链对象遍历的更高层中;`hasOwnProperty(...)` **仅仅** 检查是否拥有属性，不会查询`[[prototype]]`链。
+`in`操作符——属性是否存在于对象中，亦或存在于 `[[prototype]]` 链对象遍历的更高层中; `hasOwnProperty(...)`  **仅仅** 检查是否拥有属性，不会查询 `[[prototype]]` 链;
+
+` Object.create(null) ` 创建的对象不会链接到 ` Object.prototype ` 上。
+
 #### 枚举(Enumeration)
-`Object.propertyIsEnumerable(...)`判断属性是否直接存在于对象上，并且`enumerable:true`.    
-'Object.keys(...)' 返回对象**所有可枚举**属性的数组;`Object.getOwnPropertyNames(...)`返回所有属性的数组，**不论是否可枚举**。
+` Object.propertyIsEnumerable(...) ` 判断属性 **是否直接** 存在于对象上，并且 ` enumerable:true `.    
+
+` Object.keys(...) ` 返回对象 **所有可枚举** 属性的数组;
+
+` Object.getOwnPropertyNames(...) ` 返回所有属性的数组，**不论是否可枚举** 。
+
+` in ` 和 ` hasOwnProperty(...) ` 区别在是否查询 ` [[Prototype]] ` 链；` Object.keys(...) ` 和 ` Object.getOwnPropertyNames(..) ` 都只直接考察给定的对象。
+
 ### 迭代(Iteration)
 - `forEach(...)` 迭代数组中所有的值，忽略回调的返回值。
 - `every(...)` 迭代数组到最后，或者当回调返回 `false` 值时停止;
 - `some(...)` 迭代到最后，或者回调返回 `true` 值时停止;
-- ES6 `for .. of` 迭代可以直接获得迭代值：
+- ES6 `for .. of` 迭代可以 **迭代器(iterator)** 直接获得迭代值：
 
 ``` javascript
   var  myArray = [1,2,3];
@@ -602,21 +610,23 @@ myObject.b; // 4
   //3
 ```
 
-`for ... of` 循环会提供一个迭代器; `@@iterator` 内部对象;
+`for ... of` 循环会提供一个迭代器; `@@iterator` 内部属性;
 
 ``` javascript
   var myArray = [1,2,3];
-  var it = myArray[Symbol.iterator]();
+  var it = myArray[Symbol.iterator]();//返回迭代器
   it.next();//{value:1,done:false}
   it.next();//{value:2,done:false}
   it.next();//{value:3,done:false}
   it.next()://{done:true}
 ```
 
+` @@iterator ` 不是迭代器对象，而是返回迭代器对象的 **方法** ；
+
 ## 混合（淆）“类”的对象
 类是一种设计模式。许多语言提供语法来启用自然而然的面向类的软件设计。JS也有相似的语法，但是行为和其他语言的工作原理 **有很大不同** 。
 
-**类意味着拷贝。**
+**类意味着拷贝**
 
 当一个传统的类被实例化时，就发生了类的行为向实例中拷贝。当类被继承时，也发生父类的行为向子类的拷贝。
 
@@ -625,33 +635,51 @@ myObject.b; // 4
 JavaScript **不会自动地** （像类那样）在对象间创建拷贝。
 
 
-mixin 模式常用于在*某种程度上*模拟类的拷贝行为，但是这通常导致像显式假想多态那样（`OtherObj.methodName.call(this, ...)`）难看而且脆弱的语法，这样的语法又常导致更难懂和更难维护的代码。
+mixin 模式常用于在 *某种程度上* 模拟类的拷贝行为，但是这通常导致像显式假想多态那样（`OtherObj.methodName.call(this, ...)`）难看而且脆弱的语法，这样的语法又常导致更难懂和更难维护的代码。
 
-明确的 mixin 和类*拷贝*又不完全相同，因为对象（和函数！）仅仅是共享的引用被复制，不是对象/函数自身被复制。不注意这样的微小之处通常是各种陷阱的根源。
+明确的 mixin 和类 *拷贝* 又不完全相同，因为对象（和函数！）仅仅是共享的引用被复制，不是对象/函数自身被复制。不注意这样的微小之处通常是各种陷阱的根源。
 
 一般来讲，在 JS 中模拟类通常会比解决当前 *真正* 的问题埋下更多的坑。
 
 ## 原型
 ### [[Prototype]]
-[[Prototype]] ——一个其他对象的引用的JS对象的内部属性；对象被创建时，被赋予`null`.
+[[Prototype]] ——一个其他对象的引用的JS对象的内部属性；对象被 **创建** 时，被赋予非 `null` 值.
+
+```javascript
+  var anotherObject = {
+    a:2
+  };
+
+  //创建一个链接到 anotherObject 对象
+  // myObject [[ Prototype ]] 连接到 anotherObject
+  var myObject = Object.create( anotherObject );
+
+  myOjbect.a;//2
+```
+
+` in ` 操作符会检查对象的整个链条（不管 可枚举性）
+
 
 **`Object.prototype`**
 
 每个 *普通* `[Prototype]`链的最顶端，就是内建`Object.prototype`.
 
-属性值的查找总是从`[Prototype]`的 **最低层开始找** ；
+属性值的查找总是从 `[Prototype]` 的 **最低层开始找** ；
 
-`myObject.foo="bar"` ，`foo`不直接存在于`myObject`,而在`myObject`的`[[Prototype]]`链的高层；三种场景：      
-- 属性的`writable:true`，则直接在`myObject`上添加新属性，形成**遮蔽属性**；
-- 属性的`writable:fasle`,则**赋值会报错**，不会有遮蔽属性；
-- 属性是个`setter`，则 `setter`被调用，`myOjbect`不会有新属性，也不会有遮蔽属性；
+`myObject.foo="bar"` ，`foo`不直接存在于`myObject`,而在`myObject`的`[[Prototype]]`链的高层；
+三种 *遮蔽* 场景：      
+- 属性的`writable:true`，则直接在`myObject`上添加新属性，形成 **遮蔽属性** ；
+- 属性的`writable:fasle`,则 **赋值会报错**  ，不会有遮蔽属性；
+- 属性是个`setter`，则 `setter` 被调用，`myOjbect` 不会有新属性，也不会有遮蔽属性；
 
 ### “类”
-**JS中没有类，仅有对象。**
+**JS中没有类，仅有对象**
 
 #### “类”函数
 
 JS中所有的函数默认会得到一个公有、不可枚举的属性——`prototype`——可以指向任何的对象，称为 原型。
+
+每个由 ` new Foo() ` 创建的对象最终被 ` [[Prototype]] ` 链接到 ` Foo.prototype ` 对象。
 
 ``` javascript
 function Foo(){
@@ -661,7 +689,9 @@ var a = new Foo();
 Object.getPrototypeOf( a ) === Foo.prototype; // true
 ```
 
-在以上这段代码中，`a`的`[[Prototype]]`和`Foo.prototype`所指的对象是同一个对象；
+在以上这段代码中，`a`的`[[Prototype]]`和`Foo.prototype`所指的对象是同一个对象； **结果得到2个对象，彼此链接** 。
+
+函数自身 **不是** 构造器，当在普通函数前放上 ` new ` 时，函数调用变为“构造器调用”;也是 ` new ` 劫持了普通函数并将以另种方式调用：构建对象， **外加这个函数要做的其他任何事情**
 
 **“构造器”(Constructors)**
 
@@ -676,7 +706,7 @@ var a = new Foo();
 a.constructor === Foo; // true
 ```
 
-- 在`Foo.prototype`上的`.constructor`属性仅当`Foo`函数被声明时才出现在对象上。如果你创建一个新对象，并用它替换函数默认的`.prototype`对象引用，这个新对象上将不会魔法般地得到`.contructor`。
+- 在 `Foo.prototype` 上的 `.constructor` 属性仅当 `Foo` 函数被声明时才出现在对象上。如果你创建一个新对象，并用它替换函数默认的 `.prototype` 对象引用，这个新对象上将不会魔法般地得到 `.contructor` 。
 
 ```javascript
 function Foo() { /* .. */ }
@@ -688,24 +718,24 @@ a1.constructor === Foo; // false!
 a1.constructor === Object; // true!
 ```
 
-上面代码的解释：`a1`没有`.constructor`属性，所以它沿者`[[Prototype]]`链向上委托到了`Foo.prototype`。但是这个对象也没有`.constructor`（默认的`Foo.prototype`对象就会有！），所以它继续委托，这次轮到了`Object.prototype`，委托链的最顶端。那个 对象上确实拥有`.constructor`，它指向内建的`Object(..)`函数。
+上面代码的解释：`a1`没有`.constructor`属性，所以它沿者 `[[Prototype]]` 链向上委托到了 `Foo.prototype` 。但是这个对象也没有 `.constructor` （默认的 `Foo.prototype` 对象就会有！），所以它继续委托，这次轮到了 `Object.prototype` ，委托链的最顶端。那个 对象上确实拥有 `.constructor` ，它指向内建的 `Object(..)` 函数。
 
-- `Object.create(...)`创建新对象，并将对象链接到指定对象上，`Bar.prototype = Object.create( Foo.prototype )`;
-- `._proto_`属性设置，可以改变对象的链接；而ES6中`Object.setPrototypeOf(...)`改变对象的链接；
+- `Object.create(...)` 创建新对象，并将对象链接到指定对象上，`Bar.prototype = Object.create( Foo.prototype )`;
+- `._proto_` 属性设置，可以改变对象的链接；而ES6中 `Object.setPrototypeOf(...)` 改变对象的链接；
 
-- `instanceof` 在对象的整个`[[Prototype]]`中，有没有函数的`.prototype`指向的对象；
-- `._proto_` 获得了`[[Prototype]]`对象的引用,ES6标准化了；是 getter/setter ：
+- `instanceof` 在对象的整个 `[[Prototype]]` 中，有没有函数的 `.prototype` 指向的对象；
+- `._proto_`  获得了 `[[Prototype]]` 对象的引用,ES6标准化了；是 getter/setter ：
 
 ``` javascript
 Object.defineProperty( Object.prototype, "__proto__", {
-get: function() {
-	return Object.getPrototypeOf( this );
-},
-set: function(o) {
-	// setPrototypeOf(..) as of ES6
-	Object.setPrototypeOf( this, o );
-	return o;
-}
+    get: function() {
+    	return Object.getPrototypeOf( this );
+    },
+    set: function(o) {
+    	// setPrototypeOf(..) as of ES6
+    	Object.setPrototypeOf( this, o );
+    	return o;
+    }
 } );
 ```
 

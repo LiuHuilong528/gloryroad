@@ -16,3 +16,9 @@
     - [ ] 修复issue3
 - [ ] Leanote 维护
     - [ ] 修复issue4
+
+
+## 插入图片
+Picture
+
+![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
