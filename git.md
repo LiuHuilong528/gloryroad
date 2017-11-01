@@ -75,3 +75,50 @@ _注意_:此命令并不提交代码到仓库，只是将之前在版本管理�
 *   `git remote rm origin ` -- 删除远程项目的别称“origin”
 *   `git remote add origin git@github.com:githubAccount/Repository.git` --将仓库的协议更改为ssh，不是`https://github.com/githubAccount/Repository.git`(这是https协议的)
 *   `git push -u origin master` --向远程仓库提交代码，不用密码了
+
+
+## 删除远程仓库文件
+```bash
+  git rm -- cached "路径+文件名"
+  git commit -m "delete file"  
+  git pushf
+```
+
+
+
+## IDEA 快捷键
+- ` ctrl + N ` - Open Type
+- ` Ctrl + Alt + B ` - OpenImplementsMethods
+- ` Ctrl + Alt + 空格 ` - 查看方法注释
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------
