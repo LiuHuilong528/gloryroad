@@ -52,7 +52,7 @@ RHS —— 赋值的源（RHS），单纯的获取变量值。
 
 `(function ...)` —— 这里不是函数声明，而是一种函数表达式；在函数表达式后加 `()` ，则函数会 **立即执行** ，成为立即执行函数。   
 `(function (){}())` ——立即执行函数的另种形式；    
-`(function foo(){...})` 中 `foo`仅可以在 `...` 被找到，不会污染外围作用域
+`(function foo(){...})` 中 `foo` 仅可以在 `...` 被找到，不会污染外围作用域
 
 立即执行函数也能仅仅是为了传递参数：
 
@@ -191,28 +191,40 @@ console.log( 2 );
 ## 作用域闭包
 **闭包** 就是函数能够记住并访问它的词法作用域，即使当这个函数在它的词法作用域之外执行时。
 
-* 内部函数只要被**传递到词法作用域外**，它都将维护一个指向它最开始被声明时的作用域的引用，一旦被执行，闭包就会被行使。
+* 内部函数只要被 **传递到词法作用域外** ，它都将维护一个指向它最开始被声明时的作用域的引用，一旦被执行，闭包就会被行使。
+
+*无论何时何地* 只要你将函数作为头等的值看待并将它们传来传去的话，你就可能看到这些函数行使闭包。计时器、事件处理器、Ajax请求、跨窗口消息、web worker、或者任何其他的异步（或同步！）任务，当你传入一个 *回调函数* ，你就在它周围悬挂了一些闭包！
+
+在用于 for 循环头部的 `let` 声明被定义了一种特殊行为。这种行为说，这个变量将不是只为循环声明一次，而是为 *每次迭代声明一次* 。并且，它将在每次后续的迭代中被上一次迭代末尾的值初始化。
+
+```javascript
+for (let i=1; i<=5; i++) {
+	setTimeout( function timer(){
+		console.log( i );
+	}, i*1000 );
+}
+```
 
 ### 模块化
 
 ``` javascript
 /** 模块化的JS **/
 function CoolModule() {
-var something = "cool";
-var another = [1, 2, 3];
+  var something = "cool";
+  var another = [1, 2, 3];
 
-function doSomething() {
-	console.log( something );
-}
+  function doSomething() {
+  	console.log( something );
+  }
 
-function doAnother() {
-	console.log( another.join( " ! " ) );
-}
+  function doAnother() {
+  	console.log( another.join( " ! " ) );
+  }
 
-return {
-	doSomething: doSomething,
-	doAnother: doAnother
-};
+  return {
+  	doSomething: doSomething,
+  	doAnother: doAnother
+  };
 }
 
 var foo = CoolModule();
@@ -251,8 +263,8 @@ foo.doAnother(); // 1 ! 2 ! 3
 // 这里*立即执行*只能这使用，不能用 `CoolModule()`
 ```
 ## 附录A 动态作用域
-**动态作用域**不关心函数和作用域在哪里和如何被声明，而是关心**它们是从何处被调用的**。    
-JavaScript**实际上没有动态作用域**。有词法作用域，但是 `this` 机制和动态作用域类似。
+**动态作用域** 不关心函数和作用域在哪里和如何被声明，而是关心 **它们是从何处被调用的** 。    
+JavaScript **实际上没有动态作用域** 。有词法作用域，但是 `this` 机制和动态作用域类似。
 
 ``` javascript
 function foo() {
