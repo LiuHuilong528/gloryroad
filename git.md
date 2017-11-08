@@ -90,6 +90,7 @@ _注意_:此命令并不提交代码到仓库，只是将之前在版本管理�
 - ` ctrl + N ` - Open Type
 - ` Ctrl + Alt + B ` - OpenImplementsMethods
 - ` Ctrl + Alt + 空格 ` - 查看方法注释
+- `Mark Directory As -> *** Boot ` 在文件中创建不了类或者包
 
 
 

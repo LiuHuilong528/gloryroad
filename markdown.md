@@ -22,3 +22,8 @@
 Picture
 
 ![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
+
+## 超链接
+
+http://github.com - automatic!
+[GitHub](http://github.com)
