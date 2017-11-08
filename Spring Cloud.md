@@ -283,6 +283,8 @@ Spring Boot 加载机制:
 
           private final Logger logger = LoggerFactory.getLogger(getClass());
 
+          //EurekaClientAutoConfiguration.discoveryClient
+          @Qualifier("discoveryClient")
           @Autowired
           private DiscoveryClient discoveryClient;
 
@@ -304,12 +306,16 @@ Spring Boot 加载机制:
 
 
 #### 集群注册中心
+在Eureka的服务治理设计中，所有节点即是服务提供方，也是服务消费方， **服务中心也是一样的** ！
 
+Eureka Server 高可用就将自己作为服务向其他服务注册中心注册自己，形成一组相互注册的服务注册中心，实现服务清单的互相同步，达到高可以的效果。
 #### 服务消费者
 
 服务消费者任务——发现服务和消费服务；服务发现由Eureka客户端完成，消费服务由Ribbon完成。
 
 Ribbon是基于HTTP和TCP的客户端负载均衡器，可在客户端配置 ` ribbonServerList ` 服务端列表去轮询访问已达到负载均衡器
+
+当两者联合使用时， Ribbon的服务实例清单 `RibbonServerList` 会被 ` DiscoveryEnabledNIWSServerList ` 重写，扩展位冲 Eureka 注册中心获取服务端列表。使用 `NIWSDiscoveryPing` 取代 `IPing` , 职责委托给 Eureka 确定服务端是否启动。
 
 创建服务消费者
 

@@ -90,7 +90,9 @@ _注意_:此命令并不提交代码到仓库，只是将之前在版本管理�
 - ` ctrl + N ` - Open Type
 - ` Ctrl + Alt + B ` - OpenImplementsMethods
 - ` Ctrl + Alt + 空格 ` - 查看方法注释
-
+- ` Ctrl + Alt + O ` - 自动导入包和删除无用的导入
+- ` Ctrl + X` - 删除当前行
+- ` Ctrl+Shift+空格 ` -智能提示
 
 
 
