@@ -38,6 +38,90 @@ private List<String> name = new ArrayList<String>();
 * `Clock` : 用于访问当前时刻、日期、时间，用到时区
 * `Duration` : 用秒和纳秒表示时间的数量
 
+### java.util.concurrent 源码
+#### Copy-On-Write 之 `CopyOnWriteArrayList`
+Copy-On-Write 有 ` CopyOnWriteArrayList ` 和 ` CopyOnWriteArraySet `；顾名思义在对容器进行写操作时复制新容器——先往新的容器中添加、删除数据，操作完成后将原容器的引用指向新容器；这样不需要锁就可以进行并发读容器操作。
+
+###### 实现原理——在写操作时加锁
+
+```java
+  //jdk 1.8
+  public E set(int index, E element) {
+      final ReentrantLock lock = this.lock;
+      lock.lock();
+      try {
+          Object[] elements = getArray();
+          E oldValue = get(elements, index);
+
+          if (oldValue != element) {
+              int len = elements.length;
+              //复制 新数组  
+              Object[] newElements = Arrays.copyOf(elements, len);
+              newElements[index] = element;
+              // 把原数组引用指向新数组
+              setArray(newElements);
+          } else {
+              // Not quite a no-op; ensures volatile write semantics
+              setArray(elements);
+          }
+          return oldValue;
+      } finally {
+          lock.unlock();
+      }
+  }
+
+  final void setArray(Object[] a) {
+      // 内部数组结构
+      array = a;
+  }
+```
+
+CopyOnWrite的适用读多写少的并发场景。
+
+###### 缺点
+1. 内存占用问题——写操作时2个对象存在内存中。解决：压缩容器元素；使用其他并发容器
+2. 数据一致性问题——只能保证 **最终一致** ，不能保证数据实时一致。
+
+#### Copy-On-Write 之 `CopyOnWriteArrayList`
+
+```java
+  //jdk 1.8
+  public void add(int index, E element) {
+      final ReentrantLock lock = this.lock;
+      lock.lock();
+      try {
+          Object[] elements = getArray();
+          int len = elements.length;
+          if (index > len || index < 0)
+              throw new IndexOutOfBoundsException("Index: "+index+
+                                                  ", Size: "+len);
+          // 新数组                                        
+          Object[] newElements;
+          // 移动元素数量
+          int numMoved = len - index;
+          // 在数组末位插入
+          if (numMoved == 0)
+              newElements = Arrays.copyOf(elements, len + 1);
+          else {
+              newElements = new Object[len + 1];
+              // 复制前 index 元素
+              System.arraycopy(elements, 0, newElements, 0, index);
+              // 复制 剩余的元素
+              System.arraycopy(elements, index, newElements, index + 1,
+                               numMoved);
+          }
+          // 特定位置插入元素
+          newElements[index] = element;
+          // 原数组引用指向新数组
+          setArray(newElements);
+      } finally {
+          lock.unlock();
+      }
+  }
+```
+
+
+
 ### Spring Boot
 Spring Boot 四个核心：
 - 自动配置 ——基于 Spring的条件化配置特性，spring-boot-autoconfigure.jar包含许多配置类
@@ -464,11 +548,6 @@ mvn archetype:generate \
 </project>
 ```
 
-## IDEA
-在文件中创建不了类或者包：
-```
-  Mark Directory As -> *** Boot
-```
 
 
 ## 数据库
