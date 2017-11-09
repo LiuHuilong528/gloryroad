@@ -265,8 +265,7 @@ Spring Boot 加载机制:
       }
 
   ```
-
-供他人调用的服务： ` /hello `      
+供他人调用的服务： ` /hello `          
   ```java
       package com.lhl.eurekaprovider.web;
 
@@ -297,18 +296,18 @@ Spring Boot 加载机制:
       }
   ```
 
-
 3. 配置       
-
-
-    spring.application.name=hello-provider
-    eureka.client.serviceUrl.defaultZone=http://localhost:8888/eureka/
-
+  ```
+      spring.application.name=hello-provider
+      eureka.client.serviceUrl.defaultZone=http://localhost:8888/eureka/
+  ```
 
 #### 集群注册中心
+
 在Eureka的服务治理设计中，所有节点即是服务提供方，也是服务消费方， **服务中心也是一样的** ！
 
 Eureka Server 高可用就将自己作为服务向其他服务注册中心注册自己，形成一组相互注册的服务注册中心，实现服务清单的互相同步，达到高可以的效果。
+
 #### 服务消费者
 
 服务消费者任务——发现服务和消费服务；服务发现由Eureka客户端完成，消费服务由Ribbon完成。
@@ -420,28 +419,27 @@ Ribbon是基于HTTP和TCP的客户端负载均衡器，可在客户端配置 ` r
     	}
     }
 ```
-
 调用服务类：        
-```java
-    package com.lhl.eurekaconsumer.web;
+  ```java
+      package com.lhl.eurekaconsumer.web;
 
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.web.bind.annotation.RequestMapping;
-    import org.springframework.web.bind.annotation.RestController;
-    import org.springframework.web.client.RestTemplate;
+      import org.springframework.beans.factory.annotation.Autowired;
+      import org.springframework.web.bind.annotation.RequestMapping;
+      import org.springframework.web.bind.annotation.RestController;
+      import org.springframework.web.client.RestTemplate;
 
-    @RestController
-    public class ConsumerController {
+      @RestController
+      public class ConsumerController {
 
-        @Autowired
-        RestTemplate restTemplate;
+          @Autowired
+          RestTemplate restTemplate;
 
-        @RequestMapping("/ribbon-consumer")
-        public String helloConsumer(){
-            return restTemplate.getForEntity("http://HELLO-SERVICE/hello",String.class).getBody();
-        }
-    }
-```
+          @RequestMapping("/ribbon-consumer")
+          public String helloConsumer(){
+              return restTemplate.getForEntity("http://HELLO-SERVICE/hello",String.class).getBody();
+          }
+      }
+  ```
 
 3. 调用配置       
 ```
@@ -465,13 +463,11 @@ Ribbon是基于HTTP和TCP的客户端负载均衡器，可在客户端配置 ` r
 
 #### 服务提供者
 1. 服务注册——Eureka Server 将服务的信息存储在双层Map中，第一层是key是服务名，第二层key是具体的服务实例名。
-
 ` eureka.client.register-with-eureka=true ` 自动注册服务配置项
 
 2. 服务同步—— 服务注册中心之间互相注册为服务，接收到请求时会将请求转发给集群中其他的注册中心，这样实现注册中心之间的服务同步。
 
 3. 服务续约——注册完成后，服务提供者会维护一个心跳持续通知Eureka Server服务还活着，以防被注册中心删除服务.
-
 ```
   eureka.instance.lesse-renewal-interval-in-seconds = 30 # 服务续约任务调用间隔时间
   eureka.instance.lesse-expiration-duration-in-seconds=90 # 服务失效时间
@@ -480,7 +476,6 @@ Ribbon是基于HTTP和TCP的客户端负载均衡器，可在客户端配置 ` r
 ##### 服务消费者
 
 1. 获取服务——获取注册中心的服务清单，每隔30秒更新一次；
-
 相关配置：    
 ```
   eureka.client.fetch-registry=true
@@ -488,8 +483,7 @@ Ribbon是基于HTTP和TCP的客户端负载均衡器，可在客户端配置 ` r
   eureka.client.registry-fetch-interval-seconds=30
 ```
 
-2. 服务调用——通过服务名获得具体的实例名和实例的元数据信息，根据需要决定调用的实例。Ribbon中默认采用轮询方式进行调用，实现负载均衡。
-
+2. 服务调用——通过服务名获得具体的实例名和实例的元数据信息，根据需要决定调用的实例。Ribbon中默认采用轮询方式进行调用，实现负载均衡。     
 Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone ， 每个服务客户端被注册得到一个Zone中，所以每个客户端对应一个Region和一个Zone。服务调用的优先在同一个Zone ，没有在访问其他Zone。
 
 3. 服务下线——通知Eureka Server 服务下线；
@@ -499,17 +493,15 @@ Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone
 1. 失效剔除——默认每隔60秒将服务清单中超时（默认90秒）的服务剔除。
 
 2. 自我保护——统计心跳失败比例并保护当前实例注册信息——注册的服务不会过期。
-
-```
-  # 关闭保护机制
-  eureka.server.enable-self-preservation=false
-```
+  ```
+    # 关闭保护机制
+    eureka.server.enable-self-preservation=false
+  ```
 
 #### 配置详解
 
 - 服务注册相关的配置信息，包括服务注册中心的地址、服务获取的间隔时间、可用区域等
 - 服务实例相关配置信息，服务实例的名称、IP地址、端口号、健康检查路径等。
-
 ` org.springframework.cloud.netflix.eureka.servcer.EurekaServerConfigBean ` 中关于服务的配置
 
 ##### 服务注册类配置
