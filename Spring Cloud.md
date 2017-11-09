@@ -84,118 +84,20 @@ Spring Boot 加载机制:
 服务治理——实现各个服务实例的自动化注册与发现。
 
 #### 服务注册中心
-1. ` pom.xml `      
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>com.lhl</groupId>
-	<artifactId>eureka-server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-
-	<name>eureka-server</name>
-	<description>eureka-server</description>
-
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.7.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
-		<spring-cloud.version>Dalston.SR4</spring-cloud.version>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-eureka-server</artifactId>
-			<version>1.1.5.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-</project>
-```
-
-2. 通过 ` @EnableEurekaServer ` 注解启动服务注册中心：      
-```java
-  package com.lhl.eurekaserver;
-
-  import org.springframework.boot.SpringApplication;
-  import org.springframework.boot.autoconfigure.SpringBootApplication;
-  import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-  import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
-
-  @EnableEurekaServer// Start Service Registry Center
-  @SpringBootApplication
-  public class Application {
-
-  	public static void main(String[] args) {
-  		SpringApplication.run(Application.class, args);
-  	}
-  }
-```
-
-3. 额外自定义配置：            
-```
-  server.port=8888
-  eureka.instance.hostname=localhost
-  # Don't register itself
-  eureka.client.register-with-eureka=false
-  # Don't fectch Service
-  eureka.client.fetch-registry=false
-  eureka.client.service-url.default-zone=http://localhost:8888/eureka/
-```
-
-#### 服务提供者
-
-1. pom.xml      
-  ```xml
+1. ` pom.xml `           
+    ```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     	<modelVersion>4.0.0</modelVersion>
 
     	<groupId>com.lhl</groupId>
-    	<artifactId>eureka-provider</artifactId>
+    	<artifactId>eureka-server</artifactId>
     	<version>0.0.1-SNAPSHOT</version>
     	<packaging>jar</packaging>
 
-    	<name>spring-cloud-producer</name>
-    	<description>Demo project for Spring cloud producer</description>
+    	<name>eureka-server</name>
+    	<description>eureka-server</description>
 
     	<parent>
     		<groupId>org.springframework.boot</groupId>
@@ -214,9 +116,10 @@ Spring Boot 加载机制:
     	<dependencies>
     		<dependency>
     			<groupId>org.springframework.cloud</groupId>
-    			<artifactId>spring-cloud-starter-eureka</artifactId>
+    			<artifactId>spring-cloud-starter-eureka-server</artifactId>
     			<version>1.1.5.RELEASE</version>
     		</dependency>
+
     		<dependency>
     			<groupId>org.springframework.boot</groupId>
     			<artifactId>spring-boot-starter-test</artifactId>
@@ -245,70 +148,166 @@ Spring Boot 加载机制:
     		</plugins>
     	</build>
     </project>
-  ```
+    ```
 
-2. ` @EnableDiscoveryClient ` 注解，激活Eureka 中的 DiscoveryClient 实现（自动创建EurekaDiscoveryClient 实例）         
-  ```java
-      package com.lhl.eurekaprovider;
+2. 通过 ` @EnableEurekaServer ` 注解启动服务注册中心：         
+    ```java
+      package com.lhl.eurekaserver;
 
       import org.springframework.boot.SpringApplication;
       import org.springframework.boot.autoconfigure.SpringBootApplication;
-      import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+      import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+      import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
+      @EnableEurekaServer// Start Service Registry Center
       @SpringBootApplication
-      @EnableDiscoveryClient
-      public class ProviderApplication {
+      public class Application {
 
       	public static void main(String[] args) {
-      		SpringApplication.run(ProviderApplication.class, args);
+      		SpringApplication.run(Application.class, args);
       	}
       }
+    ```
 
-  ```
+3. 额外自定义配置：            
+    ```
+      server.port=8888
+      eureka.instance.hostname=localhost
+      # Don't register itself
+      eureka.client.register-with-eureka=false
+      # Don't fectch Service
+      eureka.client.fetch-registry=false
+      eureka.client.service-url.default-zone=http://localhost:8888/eureka/
+    ```
 
-供他人调用的服务： ` /hello `      
-  ```java
-      package com.lhl.eurekaprovider.web;
+#### 服务提供者
 
-      import org.slf4j.Logger;
-      import org.slf4j.LoggerFactory;
-      import org.springframework.beans.factory.annotation.Autowired;
-      import org.springframework.cloud.client.ServiceInstance;
-      import org.springframework.cloud.client.discovery.DiscoveryClient;
-      import org.springframework.web.bind.annotation.RequestMapping;
-      import org.springframework.web.bind.annotation.RestController;
+1. pom.xml      
+    ```xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      	<modelVersion>4.0.0</modelVersion>
 
-      @RestController
-      public class HelloController {
+      	<groupId>com.lhl</groupId>
+      	<artifactId>eureka-provider</artifactId>
+      	<version>0.0.1-SNAPSHOT</version>
+      	<packaging>jar</packaging>
 
-          private final Logger logger = LoggerFactory.getLogger(getClass());
+      	<name>spring-cloud-producer</name>
+      	<description>Demo project for Spring cloud producer</description>
 
-          //EurekaClientAutoConfiguration.discoveryClient
-          @Qualifier("discoveryClient")
-          @Autowired
-          private DiscoveryClient discoveryClient;
+      	<parent>
+      		<groupId>org.springframework.boot</groupId>
+      		<artifactId>spring-boot-starter-parent</artifactId>
+      		<version>1.5.7.RELEASE</version>
+      		<relativePath/> <!-- lookup parent from repository -->
+      	</parent>
 
-          @RequestMapping("/hello")
-          public String index(){
-              ServiceInstance instance = discoveryClient.getLocalServiceInstance();
-              logger.info("Host: " +instance.getHost()+" ; Service_Id: "+instance.getServiceId());
-              return "Hello World";
-          }
-      }
-  ```
+      	<properties>
+      		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+      		<java.version>1.8</java.version>
+      		<spring-cloud.version>Dalston.SR4</spring-cloud.version>
+      	</properties>
 
+      	<dependencies>
+      		<dependency>
+      			<groupId>org.springframework.cloud</groupId>
+      			<artifactId>spring-cloud-starter-eureka</artifactId>
+      			<version>1.1.5.RELEASE</version>
+      		</dependency>
+      		<dependency>
+      			<groupId>org.springframework.boot</groupId>
+      			<artifactId>spring-boot-starter-test</artifactId>
+      			<scope>test</scope>
+      		</dependency>
+      	</dependencies>
+
+      	<dependencyManagement>
+      		<dependencies>
+      			<dependency>
+      				<groupId>org.springframework.cloud</groupId>
+      				<artifactId>spring-cloud-dependencies</artifactId>
+      				<version>${spring-cloud.version}</version>
+      				<type>pom</type>
+      				<scope>import</scope>
+      			</dependency>
+      		</dependencies>
+      	</dependencyManagement>
+
+      	<build>
+      		<plugins>
+      			<plugin>
+      				<groupId>org.springframework.boot</groupId>
+      				<artifactId>spring-boot-maven-plugin</artifactId>
+      			</plugin>
+      		</plugins>
+      	</build>
+      </project>
+    ```
+
+2. ` @EnableDiscoveryClient ` 注解，激活Eureka 中的 DiscoveryClient 实现（自动创建EurekaDiscoveryClient 实例）         
+    ```java
+        package com.lhl.eurekaprovider;
+
+        import org.springframework.boot.SpringApplication;
+        import org.springframework.boot.autoconfigure.SpringBootApplication;
+        import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+
+        @SpringBootApplication
+        @EnableDiscoveryClient
+        public class ProviderApplication {
+
+        	public static void main(String[] args) {
+        		SpringApplication.run(ProviderApplication.class, args);
+        	}
+        }
+
+    ```     
+    供他人调用的服务： ` /hello `          
+    ```java
+        package com.lhl.eurekaprovider.web;
+
+        import org.slf4j.Logger;
+        import org.slf4j.LoggerFactory;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.cloud.client.ServiceInstance;
+        import org.springframework.cloud.client.discovery.DiscoveryClient;
+        import org.springframework.web.bind.annotation.RequestMapping;
+        import org.springframework.web.bind.annotation.RestController;
+
+        @RestController
+        public class HelloController {
+
+            private final Logger logger = LoggerFactory.getLogger(getClass());
+
+            //EurekaClientAutoConfiguration.discoveryClient
+            @Qualifier("discoveryClient")
+            @Autowired
+            private DiscoveryClient discoveryClient;
+
+            @RequestMapping("/hello")
+            public String index(){
+                ServiceInstance instance = discoveryClient.getLocalServiceInstance();
+                logger.info("Host: " +instance.getHost()+" ; Service_Id: "+instance.getServiceId());
+                return "Hello World";
+            }
+        }
+    ```
 
 3. 配置       
-
-
-    spring.application.name=hello-provider
-    eureka.client.serviceUrl.defaultZone=http://localhost:8888/eureka/
-
+    ```
+        spring.application.name=hello-provider
+        eureka.client.serviceUrl.defaultZone=http://localhost:8888/eureka/
+    ```
 
 #### 集群注册中心
+
 在Eureka的服务治理设计中，所有节点即是服务提供方，也是服务消费方， **服务中心也是一样的** ！
 
 Eureka Server 高可用就将自己作为服务向其他服务注册中心注册自己，形成一组相互注册的服务注册中心，实现服务清单的互相同步，达到高可以的效果。
+
 #### 服务消费者
 
 服务消费者任务——发现服务和消费服务；服务发现由Eureka客户端完成，消费服务由Ribbon完成。
@@ -395,61 +394,60 @@ Ribbon是基于HTTP和TCP的客户端负载均衡器，可在客户端配置 ` r
     ```
 
 2. java 类-配置类      
-```java
-    package com.lhl.eurekaconsumer;
+    ```java
+        package com.lhl.eurekaconsumer;
 
-    import org.springframework.boot.SpringApplication;
-    import org.springframework.boot.autoconfigure.SpringBootApplication;
-    import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-    import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-    import org.springframework.context.annotation.Bean;
-    import org.springframework.web.client.RestTemplate;
+        import org.springframework.boot.SpringApplication;
+        import org.springframework.boot.autoconfigure.SpringBootApplication;
+        import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+        import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+        import org.springframework.context.annotation.Bean;
+        import org.springframework.web.client.RestTemplate;
 
-    @EnableDiscoveryClient
-    @SpringBootApplication
-    public class ConsumerApplication {
+        @EnableDiscoveryClient
+        @SpringBootApplication
+        public class ConsumerApplication {
 
-    	@Bean
-    	@LoadBalanced
-    	RestTemplate restTemplate(){
-    		return new RestTemplate();
-    	}
+        	@Bean
+        	@LoadBalanced
+        	RestTemplate restTemplate(){
+        		return new RestTemplate();
+        	}
 
-    	public static void main(String[] args) {
-    		SpringApplication.run(ConsumerApplication.class, args);
-    	}
-    }
-```
-
-调用服务类：        
-```java
-    package com.lhl.eurekaconsumer.web;
-
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.web.bind.annotation.RequestMapping;
-    import org.springframework.web.bind.annotation.RestController;
-    import org.springframework.web.client.RestTemplate;
-
-    @RestController
-    public class ConsumerController {
-
-        @Autowired
-        RestTemplate restTemplate;
-
-        @RequestMapping("/ribbon-consumer")
-        public String helloConsumer(){
-            return restTemplate.getForEntity("http://HELLO-SERVICE/hello",String.class).getBody();
+        	public static void main(String[] args) {
+        		SpringApplication.run(ConsumerApplication.class, args);
+        	}
         }
-    }
-```
+    ```
+    调用服务类：        
+    ```java
+        package com.lhl.eurekaconsumer.web;
+
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.web.bind.annotation.RequestMapping;
+        import org.springframework.web.bind.annotation.RestController;
+        import org.springframework.web.client.RestTemplate;
+
+        @RestController
+        public class ConsumerController {
+
+            @Autowired
+            RestTemplate restTemplate;
+
+            @RequestMapping("/ribbon-consumer")
+            public String helloConsumer(){
+                return restTemplate.getForEntity("http://HELLO-SERVICE/hello",String.class).getBody();
+            }
+        }
+    ```
 
 3. 调用配置       
-```
-    spring.application.name=ribbon-consumer
-    server.port = 9000
+    ```
+        spring.application.name=ribbon-consumer
+        server.port = 9000
 
-    eureka.client.serviceUrl.defaultZone=http://localhost:8888/eureka/
-```
+        eureka.client.serviceUrl.defaultZone=http://localhost:8888/eureka/
+    ```
 
 #### Eureka 详解
 
@@ -464,17 +462,13 @@ Ribbon是基于HTTP和TCP的客户端负载均衡器，可在客户端配置 ` r
 
 ![服务架构图](https://github.com/LiuHuilong528/gloryroad/img/eureka-archture.png)
 
-- 服务注册中心之间互相注册成了高可用集群
-- 服务提供者在每个服务注册中心注册服务
-- 服务消费者 **只指向一个注册中心**
-
 ###### 服务提供者
-1. 服务注册——Eureka Server 将服务的信息存储在双层Map中，第一层是key是服务名，第二层key是具体的服务实例名。     
-  ` eureka.client.register-with-eureka=true ` 自动注册服务配置项
+1. 服务注册——Eureka Server 将服务的信息存储在双层Map中，第一层是key是服务名，第二层key是具体的服务实例名。
+` eureka.client.register-with-eureka=true ` 自动注册服务配置项
 
 2. 服务同步—— 服务注册中心之间互相注册为服务，接收到请求时会将请求转发给集群中其他的注册中心，这样实现注册中心之间的服务同步。
 
-3. 服务续约——注册完成后，服务提供者会维护一个心跳持续通知Eureka Server服务还活着，以防被注册中心删除服务.      
+3. 服务续约——注册完成后，服务提供者会维护一个心跳持续通知Eureka Server服务还活着，以防被注册中心删除服务.
     ```
       eureka.instance.lesse-renewal-interval-in-seconds = 30 # 服务续约任务调用间隔时间
       eureka.instance.lesse-expiration-duration-in-seconds=90 # 服务失效时间
@@ -482,17 +476,16 @@ Ribbon是基于HTTP和TCP的客户端负载均衡器，可在客户端配置 ` r
 
 ###### 服务消费者
 
-1. 获取服务——获取注册中心的服务清单，每隔30秒更新一次；      
-    相关配置：    
+1. 获取服务——获取注册中心的服务清单，每隔30秒更新一次；
+相关配置：    
     ```
-      # 从服务中心获取服务列表清单
       eureka.client.fetch-registry=true
       # 修改缓存清单更新时间
       eureka.client.registry-fetch-interval-seconds=30
     ```
 
-2. 服务调用——通过服务名获得具体的实例名和实例的元数据信息，根据需要决定调用的实例。Ribbon中默认采用轮询方式进行调用，实现负载均衡。      
-Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone ， 每个服务客户端被注册得到一个Zone中，所以每个客户端对应一个Region和一个Zone。服务调用的优先在同一个Zone ，没有再去访问其他Zone。
+2. 服务调用——通过服务名获得具体的实例名和实例的元数据信息，根据需要决定调用的实例。Ribbon中默认采用轮询方式进行调用，实现负载均衡。     
+Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone ， 每个服务客户端被注册得到一个Zone中，所以每个客户端对应一个Region和一个Zone。服务调用的优先在同一个Zone ，没有在访问其他Zone。
 
 3. 服务下线——通知Eureka Server 服务下线；
 
@@ -500,7 +493,7 @@ Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone
 
 1. 失效剔除——默认每隔60秒将服务清单中超时（默认90秒）的服务剔除。
 
-2. 自我保护——统计心跳失败比例并保护当前实例注册信息——注册的服务不会过期。      
+2. 自我保护——统计心跳失败比例并保护当前实例注册信息——注册的服务不会过期。
     ```
       # 关闭保护机制
       eureka.server.enable-self-preservation=false
@@ -510,7 +503,6 @@ Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone
 
 - 服务注册相关的配置信息，包括服务注册中心的地址、服务获取的间隔时间、可用区域等
 - 服务实例相关配置信息，服务实例的名称、IP地址、端口号、健康检查路径等。
-
 ` org.springframework.cloud.netflix.eureka.servcer.EurekaServerConfigBean ` 中关于服务的配置
 
 ##### 服务注册类配置
