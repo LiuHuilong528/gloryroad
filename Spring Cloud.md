@@ -453,57 +453,58 @@ Ribbon是基于HTTP和TCP的客户端负载均衡器，可在客户端配置 ` r
 
 #### Eureka 详解
 
-基础架构：
+##### 基础架构：
 - 服务注册中心 - eureka-server
 - 服务提供者   - eureka-provider
 - 服务消费者   - eureka-consumer 基于Ribbon实现的消费者
 
-服务治理机制
+客户端——Eureka-Client 即使服务提供者也是服务消费者。
+
+##### 服务治理机制
 
 ![服务架构图](https://github.com/LiuHuilong528/gloryroad/img/eureka-archture.png)
 
+- 服务注册中心之间互相注册成了高可用集群
+- 服务提供者在每个服务注册中心注册服务
+- 服务消费者 **只指向一个注册中心**
 
-#### 服务提供者
-1. 服务注册——Eureka Server 将服务的信息存储在双层Map中，第一层是key是服务名，第二层key是具体的服务实例名。
-
-` eureka.client.register-with-eureka=true ` 自动注册服务配置项
+###### 服务提供者
+1. 服务注册——Eureka Server 将服务的信息存储在双层Map中，第一层是key是服务名，第二层key是具体的服务实例名。     
+  ` eureka.client.register-with-eureka=true ` 自动注册服务配置项
 
 2. 服务同步—— 服务注册中心之间互相注册为服务，接收到请求时会将请求转发给集群中其他的注册中心，这样实现注册中心之间的服务同步。
 
-3. 服务续约——注册完成后，服务提供者会维护一个心跳持续通知Eureka Server服务还活着，以防被注册中心删除服务.
+3. 服务续约——注册完成后，服务提供者会维护一个心跳持续通知Eureka Server服务还活着，以防被注册中心删除服务.      
+    ```
+      eureka.instance.lesse-renewal-interval-in-seconds = 30 # 服务续约任务调用间隔时间
+      eureka.instance.lesse-expiration-duration-in-seconds=90 # 服务失效时间
+    ```
 
-```
-  eureka.instance.lesse-renewal-interval-in-seconds = 30 # 服务续约任务调用间隔时间
-  eureka.instance.lesse-expiration-duration-in-seconds=90 # 服务失效时间
-```
+###### 服务消费者
 
-##### 服务消费者
+1. 获取服务——获取注册中心的服务清单，每隔30秒更新一次；      
+    相关配置：    
+    ```
+      # 从服务中心获取服务列表清单
+      eureka.client.fetch-registry=true
+      # 修改缓存清单更新时间
+      eureka.client.registry-fetch-interval-seconds=30
+    ```
 
-1. 获取服务——获取注册中心的服务清单，每隔30秒更新一次；
-
-相关配置：    
-```
-  eureka.client.fetch-registry=true
-  # 修改缓存清单更新时间
-  eureka.client.registry-fetch-interval-seconds=30
-```
-
-2. 服务调用——通过服务名获得具体的实例名和实例的元数据信息，根据需要决定调用的实例。Ribbon中默认采用轮询方式进行调用，实现负载均衡。
-
-Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone ， 每个服务客户端被注册得到一个Zone中，所以每个客户端对应一个Region和一个Zone。服务调用的优先在同一个Zone ，没有在访问其他Zone。
+2. 服务调用——通过服务名获得具体的实例名和实例的元数据信息，根据需要决定调用的实例。Ribbon中默认采用轮询方式进行调用，实现负载均衡。      
+Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone ， 每个服务客户端被注册得到一个Zone中，所以每个客户端对应一个Region和一个Zone。服务调用的优先在同一个Zone ，没有再去访问其他Zone。
 
 3. 服务下线——通知Eureka Server 服务下线；
 
-##### 服务注册中心
+###### 服务注册中心
 
 1. 失效剔除——默认每隔60秒将服务清单中超时（默认90秒）的服务剔除。
 
-2. 自我保护——统计心跳失败比例并保护当前实例注册信息——注册的服务不会过期。
-
-```
-  # 关闭保护机制
-  eureka.server.enable-self-preservation=false
-```
+2. 自我保护——统计心跳失败比例并保护当前实例注册信息——注册的服务不会过期。      
+    ```
+      # 关闭保护机制
+      eureka.server.enable-self-preservation=false
+    ```
 
 #### 配置详解
 
