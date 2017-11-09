@@ -1,27 +1,23 @@
 # Java
-* ajax 传数组到后台：
-
-``` javascript
-var arr=[];
-arr.push({"nam":"888"});
-arr.push({"nam":"888"});
-arr.push({"nam":"888"});
-$.ajax(
-    url,
-    arr,//这里就是传给后台的数据——直接是数组；
-    success,
-    'json'
-);
-
-```
-
-java后台：
-
-``` java
-//struts中
-private List<String> name = new ArrayList<String>();
-//这样就可以接到数据了
-```
+* ajax 传数组到后台：     
+  ```javascript
+  var arr=[];
+  arr.push({"nam":"888"});
+  arr.push({"nam":"888"});
+  arr.push({"nam":"888"});
+  $.ajax(
+      url,
+      arr,//这里就是传给后台的数据——直接是数组；
+      success,
+      'json'
+  );
+  ```
+java后台：     
+  ``` java
+  //struts中
+  private List<String> name = new ArrayList<String>();
+  //这样就可以接到数据了
+  ```
 
 * ` Comparator `  中 ` a.compareTo(b) ` :    
   `1`  -> b a   
@@ -43,7 +39,6 @@ private List<String> name = new ArrayList<String>();
 Copy-On-Write 有 ` CopyOnWriteArrayList ` 和 ` CopyOnWriteArraySet `；顾名思义在对容器进行写操作时复制新容器——先往新的容器中添加、删除数据，操作完成后将原容器的引用指向新容器；这样不需要锁就可以进行并发读容器操作。
 
 ###### 实现原理——在写操作时加锁
-
 ```java
   //jdk 1.8
   public E set(int index, E element) {
@@ -75,9 +70,7 @@ Copy-On-Write 有 ` CopyOnWriteArrayList ` 和 ` CopyOnWriteArraySet `；顾名�
       array = a;
   }
 ```
-
 CopyOnWrite的适用读多写少的并发场景。
-
 ###### 缺点
 1. 内存占用问题——写操作时2个对象存在内存中。解决：压缩容器元素；使用其他并发容器
 2. 数据一致性问题——只能保证 **最终一致** ，不能保证数据实时一致。
