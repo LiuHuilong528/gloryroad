@@ -499,16 +499,19 @@ Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone
       eureka.server.enable-self-preservation=false
     ```
 
-#### 配置详解
+###### 源码分析
+` org.springframework.cloud.client.discovery.DiscoveryClient ` 是Spring Cloud 的接口，定义了发现服务的常用抽象方法; ` org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient ` 是该接口的实现类，此类依赖了  `com.netflix.discovery.EurekaClient` 接口，定义针对 Eureka 的服务发现的抽象方法，真正实现发现服务的是Netflix 包中的 `com.netflix.discovery.DiscoveryClient` 类。
+
+###### 配置详解
 
 - 服务注册相关的配置信息，包括服务注册中心的地址、服务获取的间隔时间、可用区域等
 - 服务实例相关配置信息，服务实例的名称、IP地址、端口号、健康检查路径等。
 ` org.springframework.cloud.netflix.eureka.servcer.EurekaServerConfigBean ` 中关于服务的配置
 
-##### 服务注册类配置
+###### 服务注册类配置
 可以查看 ` org.springframework.cloud.netflix.eureka.EurekaClientConfigBean ` 以 ` eureka.client ` 为前缀。
 
-##### 服务实例配置
+###### 服务实例配置
 ` org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean ` 中以 ` eureka.instance ` 为前缀
 
 
