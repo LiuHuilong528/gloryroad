@@ -83,16 +83,16 @@
           ```
 
 *  修改系统时区      
-    ```shell
-        # 查看时区
-        date -R
-        # 修改当前用户时区
-        sudo tzselect
-        # 修改系统时区
-        sudo cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
-        # 更新时间
-        sudo ntpdate time.windows.com
-    ```
+  ```shell
+      # 查看时区
+      date -R
+      # 修改当前用户时区
+      sudo tzselect
+      # 修改系统时区
+      sudo cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
+      # 更新时间
+      sudo ntpdate time.windows.com
+  ```
 *   登录时，默认的 `shell` 不是 ` bash `     
     ```shell
       # 查看机器安装的shell
@@ -106,6 +106,35 @@
     ```shell
       scp [user@host:]file destination  
     ```
+*   LVM 调整分区大小      
+>\# vgdisplay  
+\# lvdisplay lhl-vg  
+```
+--- Logical volume ---  
+      LV Path                /dev/lhl-vg/swap_1   
+      LV Name                swap_1   
+      VG Name                lhl-vg   
+      LV UUID                aZRGkt-88Mw-aV1V-8t2X-Mn6F-tRmF-y9XXSj   
+      LV Write Access        read/write   
+      LV Creation host, time lhl, 2017-11-08 15:10:49 +0800   
+      LV Status              available    
+      \# open                 2   
+      LV Size                4.00 GiB   
+      Current LE             1023   
+      Segments               1    
+      Allocation             inherit    
+      Read ahead sectors     auto   
+      \- currently set to     256    
+      Block device           252:1    
+·······
+```   
+\# lvreduce -L -1G -f /dev/lhl-vg/swap_1   
+\# lvcreate -L 1G -n mylvm /dev/lhl-vg   
+\# mkdir /mylvm    
+\# mke2fs -j -t ext4 /dev/lhl-vg/mylvm   
+\# mount -t ext4 /dev/lhl-vg/mylvm /mylvm    
+
+*   d
 
 
 # Centos 7
@@ -169,7 +198,7 @@
       rm -rf symbolic_name
       $xz -d ***.tar.xz
 
-$tar -xvf  ***.tar
+      $tar -xvf  ***.tar
   ```
 
 - 查看显卡信息       
@@ -192,5 +221,4 @@ $tar -xvf  ***.tar
 
 
 
-
-#
+# c

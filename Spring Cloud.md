@@ -504,24 +504,75 @@ Eureka 中有 Region 和 Zone 的概念，一个Region 中可以包含多个Zone
 
 ###### 配置详解
 
+Eureka 客户端配置分2个方面：        
 - 服务注册相关的配置信息，包括服务注册中心的地址、服务获取的间隔时间、可用区域等
 - 服务实例相关配置信息，服务实例的名称、IP地址、端口号、健康检查路径等。
 ` org.springframework.cloud.netflix.eureka.servcer.EurekaServerConfigBean ` 中关于服务的配置
 
+`enabaleSelefPreservation` 关闭注册中心的“自我保护功能”；
+
 ###### 服务注册类配置
 可以查看 ` org.springframework.cloud.netflix.eureka.EurekaClientConfigBean ` 以 ` eureka.client ` 为前缀。
 
-###### 服务实例配置
-` org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean ` 中以 ` eureka.instance ` 为前缀
+##### 服务实例配置
+* 元数据     
+` org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean ` 中以 ` eureka.instance ` 为前缀，此类中的 `metadata` 是 **自定义的元数据信息** ;而其他的则为标准的元数据信息;
+`eureka.instance.<properties> = <value>` 格式对标准化元数据直接配置；     
+`eureka.instance.metadataMap.<key>=<value>` 对自定义个元数据配置；
 
+* 实力名配置     
+命名规则：`${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id}:${server.port}`  
+
+* 端点配置
+homePageUrl 、 statusPageUrl、healthCheckUrl 代表主页URL、状态页的URL、健康检查的URL。    
+特殊情况才需要修改这些URL配置:        
+  - 应用设置了 ` context-path ` 为/info 和 /health 端点做以下配置       
+    ```
+      management.context-path = /hello
+
+      eureka.instance.statusPageUrlPath = ${management.context-path}/info
+      eureka.instance.healthCheckUrlPath = ${management.context-path}/health
+    ```
+    安全考虑，也会修改 /info 和 /health 断电的原始路径特殊配置：      
+    ```
+      endpoints.info.path = /appInfo
+      endpoints.health.path = /checkHealth
+
+      eureka.instance.statusPageUrlPath = /${endpoints.info.path}
+      eureka.instance.healthCheckUrl=/${endpoints.info.path}
+    ```
+    以上使用的是相对路径，spring cloud eureka 提供了绝对路径的配置
+
+* 健康监测      
+  spring cloud eureka中可以将Eureka客户端的健康检测交给spring-boot-actuator 模块的 /health 端点，步骤：    
+    * `pom.xml` 添加 spring-boot-actuator 模块
+    * application.properties 增加配置： eureka.client.healthcheck.enabel=true
+    * 对客户端的 /health 端点的特殊处理
+
+### 跨平台支持
+通信机制使用了 HTTP 的REST接口实现，利用HTTP的平台无关性，是的Eureka的客户端不限于用java进行开发。
+
+#### 通信协议
+默认使用 Jersey 和 XStream 配额 JSON 作为 Server 与 Client 的通信协议；       
+1. Jersey 是 JAX-RS 的参考实现，三个主要部分：      
+  * **核心服务器** ：使用 JSR311 的标准化注解和API标准化，直观的开发 RESTful Web 服务。
+  * **核心客户端** : Jersey客户端API与REST服务通信简单
+  * **集成** ：提供轻松集成 Spring、Guice、Apache Abdera的库。
+2. XStream 是将对象序列化为XML（JSON）或反序列化为对象的JAVA类库
 
 ## 第四章 客户端负载均衡： SpringCloudRibbon
 
-使用Ribbon实现客户端的负载均衡，及原理。
+Spring Cloud Ribbon 基于 HTTP 和 TCP 的客户端负载均衡工具基于Ribbon实现。
+
+使用Ribbon实现客户端的负载均衡及原理。
 
 ### 客户端负载均衡
 
 所有客户端节点维护自己要访问的来自服务注册中心的服务端清单.
+
+Spring Cloud 实现的服务治理框架中，默认会创建各个服务治理框架的 Ribbon的自动化整合配置：    
+  * Eureka —— org.springframework.cloud.netflix.eureka.RibbonEurekaAutoConfiguration
+  * Consul —— org.springframework.cloud.consul.discovery.RibbonConsulAutoConfiguration
 
 Ribbon 使用客户端负载均衡调用要二步：
 1. 服务提供者启动多个服务实例并注册到同一个注册中心或多个相关的服务注册中心。
