@@ -561,11 +561,15 @@ homePageUrl 、 statusPageUrl、healthCheckUrl 代表主页URL、状态页的URL
 
 Spring Cloud Ribbon 基于 HTTP 和 TCP 的客户端负载均衡工具基于Ribbon实现。
 
-使用Ribbon实现客户端的负载均衡，及原理。
+使用Ribbon实现客户端的负载均衡及原理。
 
 ### 客户端负载均衡
 
 所有客户端节点维护自己要访问的来自服务注册中心的服务端清单.
+
+Spring Cloud 实现的服务治理框架中，默认会创建各个服务治理框架的 Ribbon的自动化整合配置：    
+  * Eureka —— org.springframework.cloud.netflix.eureka.RibbonEurekaAutoConfiguration
+  * Consul —— org.springframework.cloud.consul.discovery.RibbonConsulAutoConfiguration
 
 Ribbon 使用客户端负载均衡调用要二步：
 1. 服务提供者启动多个服务实例并注册到同一个注册中心或多个相关的服务注册中心。
