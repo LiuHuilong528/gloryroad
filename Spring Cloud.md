@@ -575,10 +575,72 @@ Spring Cloud 实现的服务治理框架中，默认会创建各个服务治理�
   * Consul —— org.springframework.cloud.consul.discovery.RibbonConsulAutoConfiguration
 
 Ribbon 使用客户端负载均衡调用要二步：
-1. 服务提供者启动多个服务实例并注册到同一个注册中心或多个相关的服务注册中心。
+1. 服务提供者启动多个服务实例并注册到同一个注册中心或多个相关的服务注册中心- `@EnableDiscoveryClient`。
 2. 服务消费者直接通过调用被 ` @LoadBalanced ` 注解修饰过的 RestTemplate 实现服务接口的调用。
 
+RestTemplate 实现GET、POST、PUT、DELETE四种请求的服务调用实现; Ribbon的客户端负载均衡也是基于RestTemplate实现的。
 
+`@LoadBalanced` 修饰 RestTemplate ，以使用 `LoadBalancerClient` 配置它;       
+`LoadBalancerClient` 定义的方法有：    
+  1. ServiceInstance choose(String serviceId) - 从负载均衡器中挑选一个服务实例
+  2. T excute - 使用服务实例执行请求（服务调用）
+  3. URI reconstructURI - 将 `http://myservice/path/to/serviceId` 形式请求转换为 `host:port` 形式。
+
+
+- [ ] Spring Cloud Ribbon 实现客户端负载均衡的脉络，了解 LoadBalancerInterceptor拦截器对RestTemplate请求进行拦截，用Spring Cloud负载均衡器LoadBalancerClient将逻辑服务名为host的URI转换成具体服务实例地址的过程。同时分析了LaodBalancerClient的Ribbon实现RibbonLoadBalancerClient,可以知道在使用Ribbon实现负载均衡器时，实际使用的时Ribbon中ILoadBalancer接口的实现，自动化配置会采用ZoneAwareLoadBalancer实例来实现客户端的负载均衡。
+
+#### 负载均衡器
+Spring Cloud中定义LoadBalancerClient 作为负载均衡器的同哟那条接口，针对 Ribbon 实现了 RibbonLoadBalancerClient;但是在具体实现时将负载均衡委托给 Ribbon 的 ILoadBalancer 接口的实现;
+
+
+ILoadBalancer 接口实现类实现客户端负载均衡：       
+  * **AbstractLoadBalancer** 抽象类
+  * **BaseLoadBalancer** 基础实现类，其中负载均衡的处理规则 IRule 对象实现了 **服务实例选择** ;
+  * **DynamicServerListLoadBalancer** 基于 BaseLoadBalancer 的扩展，服务实例清单的 **运行期** 动态更新，和对服务实例清单的过滤;
+
+
+
+### 配置详解
+
+#### 自动化配置
+
+Spring Cloud Ribbon 帮助简化了 Ribbon 的配置，自动化构建了以下接口实现：    
+  1. IClientConfig： **Ribbon** 的客户端配置，默认采用 `com.netflix.client.config.DefaultClientConfigImpl` 实现
+  2. IRule: **Ribbon** 负载均衡策略，默认采用 `com.netflix.loadbalancer.ZoneAvoidanceRule` 实现——在多区域环境下选出最件区域的实例进行访问。
+  3. IPing: **Ribbon** 的实例检查策略，默认采用 `com.netflix.loadbalancer.NoOpPing` 实现，默认所有服务实例可用
+  4. ServerList<Server>: 服务实例清单的维护机制，默认采用 `com.netflix.loadbalancer.ConfigurationBasedServerList` 实现
+  5. ServerListFilter<Server>:服务清单过滤机制，默认 `org.springframework.cloud.netflix.ribbon.ZonePreferenceServerListFilter` 实现，优先过滤出与请求调用方处于同区域的服务实例
+  6. ILoadBalancer:负载均衡器，默认采用 `com.netflix.loadbalancer.ZoneAwareLoadBalancer` 实现，具备区域感知能力
+
+**以上配置，只在没有引入Spring Cloud Eureka 服务治理框架时如此**
+
+**`org.springframework.cloud.netflix.ribbon.PropertiesFactory`** 动态为 RibbonClient 创建接口实现：       
+  1. NFLoadBalancerPingClassName ——IPing接口实现类
+  2. NFLoadBalancerClassName -- ILoadBalancer 接口实现
+  3. NFLOadBalancerRuleClassName -- IRule 接口实现
+  4. NIWSServerListClassName -- ServerList 接口实现
+  5. NIWSServerListFilterClassName -- ServerListFilter 接口实现
+
+#### 参数配置
+**Ribbon** 参数配置两种方式：全局配置以及指定客户端配置     
+  * 全局配置简单使用 ribbon.<key>=<value>，<key>代表Ribbon客户端配置的参数名
+  * 客户端配置采用<client>.ribbon.<key>=<value>
+
+Ribbon 参数的 key 和 value 可以参看 `com.netflix.client.config.CommonClientConfigKey` 获取更详细的配置内容
+
+#### 与Eureka 结合
+Eureka中对Ribbon的自动化配置会被触发：     
+  1. ServerList的维护机制——`com.netflix.niws.loadbalancer.DiscoveryEnabledNIWWServerList` ,服务清单列表由 Eureka 服务治理机制维护
+  2. `com.netflix.niws.loadbalancer.NIWSDiscoveryPing`——IPing的实现， 负责实例检查任务
+  3. `org.springframework.cloud.netflix.ribbon.eureka.DomainExtractingServerList` 负责实例维护策略
+
+Spring Cloud Ribbon 与 Spring Cloud Eureka 结合的工程中，可以禁用Eureka对Ribbon服务实例的维护实现：      
+  ```
+    ribbon.eureka.enabled = false
+  ```
+
+
+## 第五章 服务容错保护：Spring Cloud Hystrix
 
 
 

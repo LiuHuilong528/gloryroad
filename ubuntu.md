@@ -70,29 +70,29 @@
         ```
 *    新增 shh 连接用户，以 root 用户为例：     
         1. 修改 /etc/ssh/sshd_config        
-          ```shell
-              sudo vi /etc/ssh/sshd_config
-          ```
+            ```shell
+                sudo vi /etc/ssh/sshd_config
+            ```
         2. 找到 ` #PermitRootLogin without-password `
-          ```
-            PermitRootLogin yes
-          ```
+            ```
+              PermitRootLogin yes
+            ```
         3. 重启 ` ssh ` 服务        
-          ```
-              sudo service ssh restart
-          ```
+            ```
+                sudo service ssh restart
+            ```
 
 *  修改系统时区      
-  ```shell
-      # 查看时区
-      date -R
-      # 修改当前用户时区
-      sudo tzselect
-      # 修改系统时区
-      sudo cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
-      # 更新时间
-      sudo ntpdate time.windows.com
-  ```
+    ```shell
+        # 查看时区
+        date -R
+        # 修改当前用户时区
+        sudo tzselect
+        # 修改系统时区
+        sudo cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
+        # 更新时间
+        sudo ntpdate time.windows.com
+    ```
 *   登录时，默认的 `shell` 不是 ` bash `     
     ```shell
       # 查看机器安装的shell
@@ -106,11 +106,11 @@
     ```shell
       scp [user@host:]file destination  
     ```
-*   LVM 调整分区大小      
->\# vgdisplay  
-\# lvdisplay lhl-vg  
-```
---- Logical volume ---  
+* LVM 调整分区大小          
+  >\# vgdisplay       
+  \# lvdisplay lhl-vg     
+    ``````
+      --- Logical volume ---
       LV Path                /dev/lhl-vg/swap_1   
       LV Name                swap_1   
       VG Name                lhl-vg   
@@ -118,23 +118,35 @@
       LV Write Access        read/write   
       LV Creation host, time lhl, 2017-11-08 15:10:49 +0800   
       LV Status              available    
-      \# open                 2   
+      # open                 2   
       LV Size                4.00 GiB   
       Current LE             1023   
       Segments               1    
       Allocation             inherit    
       Read ahead sectors     auto   
-      \- currently set to     256    
+      - currently set to     256    
       Block device           252:1    
-·······
-```   
-\# lvreduce -L -1G -f /dev/lhl-vg/swap_1   
-\# lvcreate -L 1G -n mylvm /dev/lhl-vg   
-\# mkdir /mylvm    
-\# mke2fs -j -t ext4 /dev/lhl-vg/mylvm   
-\# mount -t ext4 /dev/lhl-vg/mylvm /mylvm    
+      ·······
+    ``````   
+  \# lvreduce -L -1G -f /dev/lhl-vg/swap_1    
+  \# lvcreate -L 1G -n mylvm /dev/lhl-vg      
+  \# mkdir /mylvm       
+  \# mke2fs -j -t ext4 /dev/lhl-vg/mylvm      
+  \# mount -t ext4 /dev/lhl-vg/mylvm /mylvm       
 
-*   d
+* 桌面快捷方式配置——IDEA的桌面快捷方式      
+  ```
+  [Desktop Entry]
+  Encoding=UTF-8
+  Name=IdeaIU
+  Comment=IdeaIU
+  Exec=/home/carl/soft/idea-IU-172.4343.14/bin/idea.sh
+  Icon=/home/carl/soft/idea-IU-172.4343.14/bin/idea.png
+  Terminal=false
+  Type=Application
+  Categories=Application;Development;        
+  ```
+
 
 
 # Centos 7
@@ -165,25 +177,25 @@
 
 
 
-### 网络设置
+### 网络设置      
 1. 查看 ` nmcli connection show `
-2. 设置     
-  ```shell
-  vi /etc/sysconfig/network-scripts/ifcfg-enp0s3  #ifcfg-enp0s3 网卡名
+2. 设置        
+    ```shell
+    vi /etc/sysconfig/network-scripts/ifcfg-enp0s3  #ifcfg-enp0s3 网卡名
 
-  BOOTPROTO="static" #dhcp改为static   
-  ONBOOT="yes" #开机启用本配置  
-  IPADDR=192.168.7.106 #静态IP  
-  GATEWAY=192.168.7.1 #默认网关  
-  NETMASK=255.255.255.0 #子网掩码  
-  DNS1=8.8.8.8 #DNS 配置
+    BOOTPROTO="static" #dhcp改为static   
+    ONBOOT="yes" #开机启用本配置  
+    IPADDR=192.168.7.106 #静态IP  
+    GATEWAY=192.168.7.1 #默认网关  
+    NETMASK=255.255.255.0 #子网掩码  
+    DNS1=8.8.8.8 #DNS 配置
 
-  service network restart  # 重启网络服务
-  ######################################
-  ##    另外的方式                     ##
-  ######################################
-  nmcli connection modify
-  ```
+    service network restart  # 重启网络服务
+    ######################################
+    ##    另外的方式                     ##
+    ######################################
+    nmcli connection modify
+    ```
 - 列出所有版本信息         
   ```bash
     lsb_release -a
