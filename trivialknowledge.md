@@ -303,6 +303,13 @@ public class MyHtmlUnitTests {
 1. ` facet  ` 为true时进行facet（切片）查询
 2. ` facet.query `
 
+### Highlight 查询
+参数说明：     
+  * `hl`-开启高亮
+  * `hl.fl`--高亮的字段
+  * `hl.simple.pre` 和 `hl.simple.post` 高亮的自定义格式
+  
+
 
 
 ## JavaTools
