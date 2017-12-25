@@ -35,6 +35,10 @@ java后台：
 * `Duration` : 用秒和纳秒表示时间的数量
 
 ### java.util.concurrent 源码
+#### Thread
+* Thread.interrupted()- Test 当前 **运行的 Thread** 是否被中断, 会clear thread status
+* thread.isInterrupt() - Test this Thread is interrupted；
+
 #### Copy-On-Write 之 `CopyOnWriteArrayList`
 Copy-On-Write 有 ` CopyOnWriteArrayList ` 和 ` CopyOnWriteArraySet `；顾名思义在对容器进行写操作时复制新容器——先往新的容器中添加、删除数据，操作完成后将原容器的引用指向新容器；这样不需要锁就可以进行并发读容器操作。
 
@@ -275,7 +279,7 @@ public class MyHtmlUnitTests {
 
 
 **Solr 标准查询参数：**    
-* q   标准语法查询语句
+* q   标准语法查询语句, q="new house" 短语查询，不会分词
 * q.op  查询表达式的默认操作符
 * df   默认field
 * sow  
@@ -308,7 +312,7 @@ public class MyHtmlUnitTests {
   * `hl`-开启高亮
   * `hl.fl`--高亮的字段
   * `hl.simple.pre` 和 `hl.simple.post` 高亮的自定义格式
-  
+
 
 
 
