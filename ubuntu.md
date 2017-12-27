@@ -147,6 +147,9 @@
   Categories=Application;Development;        
   ```
 
+查看端口情况：
+>
+netstat -ap | grep port
 
 
 # Centos 7
