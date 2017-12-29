@@ -163,13 +163,34 @@ RUNAS=solr
 
 
 
+---
 
-**Solr**
+# Solr in Action
+## Solr Features overview
 
+### 用户体验
+1. Pagination and sorting
+2. Faceting
+3. Autosuggest
+4. Spell-checking
+5. Hit highlighting
+6. Geospatial search
 
+### 数据模型支持
+1. Result grouping/field collapsing
+2. Flexible query support
+3. Joins
+4. Document clustering
+5. Importing rich document formats such as PDF and Word
+6. Importing data from relational databases
+7. Multilingual support
 
-
-
+### 新特性
+1. Near real-time search
+2. Atomic updates with optimistic concurrency
+3. Real-time get
+4. Write durability using a transaction log
+5. Easy sharding and replication using ZooKeeper
 
 
 
