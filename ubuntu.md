@@ -107,7 +107,7 @@
       scp [user@host:]file destination  
     ```
 * LVM 调整分区大小          
-  >\# vgdisplay       
+  > \# vgdisplay       
   \# lvdisplay lhl-vg     
     ``````
       --- Logical volume ---
@@ -223,6 +223,10 @@ netstat -ap | grep port
   ```
 
 
+
+# Shell
+* `tr` - 替换     
+  > echo $PATH | tr '\:' '\n'
 
 
 

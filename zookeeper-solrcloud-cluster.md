@@ -1,5 +1,5 @@
 # Zookeeper 集群搭建
->cd Zookeeper     
+>cd Zookeeper  # 相当于进入 ${ZK_HOME} 目录   
 cp conf/zoo_sample.cfg conf/zoo.cfg     
 vi conf/zoo.cfg     
   ```
@@ -15,7 +15,7 @@ vi conf/zoo.cfg
  #以下为日志文件位置配置  
 vi bin/zkEnv.sh     
   ```
-  ZOO_LOG_DIR="../logs" # 在当前目录创建logs 目录
+  ZOO_LOG_DIR="../logs" # 在${ZK_HOME} 目录创建logs文件夹
   ...
   ZOO_LOG4J_PROP="INFO,ROLLINGFILE"
   ```   
@@ -60,10 +60,111 @@ Solr 扩展
   ```
   /admin/collections?action=ADDREPLICA&collection=collection&shard=shard&node=nodeName      
   ```
-  在UI界面上新增 Replica 就可以了
+  在UI界面上新增 Replica 即可！
 
 
 
+### Solr 脚本操作
+#### solr 重启：		
+> ./bin/solr start -c -p 8983 -s example/cloud/nodel1/solr        
+./bin/solr statr -c -p 7574 -s example/cloud/nodel2/solr -z localhost:9983
+
+#### solr 启动，关闭，新建Collection，delete Collections 等
+>   
+  bin/solr start [-f] [-c] [-h hostname] [-p port] [-d directory] [-z zkHost] [-m memory] [-e example] [-s solr.solr.home 实例目录] [-t solr.data.home 数据] [-a "additional-options"] [-V] # 启动     
+>
+  bin/solr stop [-k key] [-p port] #关闭solr实例      
+
+>  bin/solr create [-c name] [-d confdir] [-n confname] [-shards #] [-replicationFactor #] [-p port] [-V] #创建新集合   
+
+>  bin/solr delete [-c name] [-deleteConfig boolean] [-p port] [-V]  #删除集合       
+
+> bin/post -c techproducts example/exampledocs/*  # 导入数据    
+
+#### 启动已经运行过的Solr实例
+> ./bin/solr start -c -p 8983 -s example/cloud/node1/solr #启动第一个       
+> ./bin/solr start -c -p 7574 -s example/cloud/node2/solr -z localhost:9983 #启动第二个节点
+
+
+#### Solr `catchall` CopyField
+Add Copy Filed -> Source:* -> destination:_text_ 这个操作会将所有字段的值copy到名为 `_text_` 的字段上，此字段会建索引和存储；意味为所有的索引会建2次。
+
+#### solr 创建Collection  
+> bin/solr create -c films -s 2 -rf 2
+
+
+#### 创建 Solr 数据索引		
+> bin/solr -c films example/films/films.json
+
+
+#### Range Facets     		
+> curl 'http://localhost:8983/solr/films/select?q=*:*&rows=0'\      
+ '&facet=true'\        
+ '&facet.range=initial_release_date'\            
+ '&facet.range.start=NOW-20YEAR'\            
+ '&facet.range.end=NOW'\         
+ '&facet.range.gap=%2B1YEAR'   
+
+
+#### Pivot Facets-决策树Facet查询		
+> curl "http://localhost:8983/solr/films/select?q=*:*&rows=0&facet=on&facet.pivot=genre_str,directed_by_str"
+
+#### 删除 Collection			
+> bin/solr delete -c films
+
+
+#### 创建索引的方法：
+* `bin/post` 利用 Post Tool，支持 JSON、XML、CSV、HTML、PDF、MSWord等
+* `DataImportHandler` 能连接到数据库、邮件服务器或其他结构化数据源
+* `SolrJ` solr与java语言交流工具
+* `Documents Screen` -Solr 的界面管理工具
+
+#### 删除数据		
+> bin/post -c localDocs -d "<delete><id>123</id></delete>"			
+bin/post -c localDocs -d "<delete><query>*:*</query></delete>"
+
+### 将Solr安装为机器的服务运用系统命令管理
+
+1. 从 `.tgz` 中抽取出脚本		
+> tar xzf solr-7.1.0.tgz solr-7.1.0/bin/install_solr_service.sh --strip-components=2    
+
+2. 安装为服务的命令		
+> sudo bash ./install_solr_service.sh solr-7.1.0.tgz -i /opt -d /var/solr -u solr -s solr -p 8983
+
+3. Solr Home Directory		
+>  `/var/solr/data` ## 可以用参数 -d 进行自定义
+
+4. 环境变量覆盖		
+>		
+SOLR_PID_DIR=/var/solr    
+SOLR_HOME=/var/solr/data    
+LOG4J_PROPS=/var/solr/log4j.properties    
+SOLR_LOGS_DIR=/var/solr/logs    
+SOLR_INSTALL_DIR=/opt/solr    
+SOLR_ENV=/etc/default/solr.in.sh    
+RUNAS=solr    
+
+在 `/etc/default/solr.in.sh` 修改 JVM 运行参数
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Solr**
 
 
 
