@@ -228,6 +228,18 @@ netstat -ap | grep port
 * `tr` - 替换     
   > echo $PATH | tr '\:' '\n'
 
+* 输出重定向     
+  ```
+  #分开
+  command 2>stderr.txt 1>stdout.txt
+  #stderr 和 stdout 重定向在一起
+  cmd 2>&1 output.txt
+  cmd &> output.txt
+  #/dev/null 清楚信息
+  cmd 2>/dev/null
+  # 重定向输出和后续命令的stdin
+  cat a * | tee out.txt | cat -n #有输出文件out.txt文件和cat 命令的运行结果
+  ```
 
 
 

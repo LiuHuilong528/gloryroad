@@ -46,9 +46,47 @@ vi conf/log4j.properties
    cd {TOMCAT_HOME}/bin   
    ./start.sh  # 启动tomcat 即可到端口访问solr界面
 
+# Solr zookeeper 配置文件 —— 利用了 `solr.sh`
+上传配置文件到zookeeper中       
+`bin/solr zk upconfig -z zkHost:port -n mynewconfig -d /path/to/upload`
+
+下载zookeeper中的配置文件到本地        
+`bin/solr zk downconfig -z zkHost:port -n downloadedConf -d /local/path`
+
+本地文件复制到zookeeper中     
+1. 文件夹：`bin/solr zk cp -r file:/apache/confgs/whatever/conf zk:/configs/myconf -z zkHost:port`
+2. 单个文件：`bin/solr zk cp zk:/configs/myconf/managed_schema /configs/myconf/managed_schema -z zkHost:port`
+
+
+## solr FastVectorHighlight -多种背景色高亮 -- 6.3
+managet-schema 修改：      
+``` xml
+.......
+<field name="text_textansj" type="text_ansj" indexed="true" termOffsets="true" stored="true" termPositions="true" termVectors="true"/>
+.......
+```
+
+查询语句：
+``` java
+ SolrQuery solrQuery = new SolrQuery();
+ solrQuery.setFacet(false);
+ solrQuery.add("indent","on");
+ solrQuery.add("df", "text_textansj");
+ solrQuery.add("hl.fl" , "text_textansj");
+ solrQuery.add("hl", "on");
+ solrQuery.add("q","取消订单  or 优惠券");//查询条件
+ solrQuery.add("hl.method" , "fastVector");
+ solrQuery.add("hl.fragListBuilder" , "weighted");
+ solrQuery.add("hl.fragmentsBuilder" , "colored");
+ solrQuery.add("hl.q" , "取消订单  or 优惠券");//需要高亮的内容
+ solrQuery.add("fl","id");
+ solrQuery.add("hl.useFastVectorHighlighter" , "true");//不能少
+ solrQuery.add("hl.fragsize", "10000");
+ solrQuery.add("wt" , "json");
+```
 
 ----  
-Solr 扩展
+# Solr 扩展
 1. 增加Shard    
   只有 `router` 为 implicit 的collection才可以动态添加shard    
   ```
