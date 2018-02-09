@@ -12,7 +12,7 @@ vi conf/zoo.cfg
   server.2=192.168.1.55:2888:3888
   server.3=192.168.1.112:2888:3888  
   ```     
- #以下为日志文件位置配置  
+  #以下为日志文件位置配置  
 vi bin/zkEnv.sh     
   ```
   ZOO_LOG_DIR="../logs" # 在${ZK_HOME} 目录创建logs文件夹
