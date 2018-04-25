@@ -1,5 +1,43 @@
 # Git
 
+## 使用前配置     
+
+    $ git config --global user.name "John Doe"   
+    $ git config --global user.email johndoe@example.com            
+    $ git config --global core.editor emacs --文本编辑器     
+    
+
+## 命令帮助
+
+    $ git help <verb>
+    $ git <verb> --help
+    $ man git-<verb>
+
+## git 基础
+
+    $ git init -- 初始化项目   
+    $ git add *.c --跟踪文件    
+    $ git commit -m 'initial project version' --向暂存区提交修改    
+    $ git status --检查当前文件状态    
+    $ git status -状态简览     
+                                
+    $ git status -s              
+     M README --工作区被修改了但是还没有将修改后的文件放入暂存区       
+    MM Rakefile --工作区被修改并提交到暂存区后又在工作区中被修改了，所以在暂存区和工作区都有该文件被修改了的记录          
+    A  lib/git.rb        
+    M  lib/simplegit.rb --文件被修改了并将修改后的文件放入了暂存区        
+    ?? LICENSE.txt          
+        
+    $ git diff --查看工作区和暂存区的差异
+    $ git diff --staged[--cached] --查看暂存区下次提交仓库的内容      
+    $ git commit --提交
+    $ git commit -a --所有纳入版本管理的文件跳过 `add` 直接 `commit`    
+    $ git rm  --从暂存区删除文件（工作目录的也会删除）      
+    $ git rm --cached README --删除仓库和暂存区，但是保留工作目录中的     
+    $ git mv file_from file_to --修改文件名
+    
+    
+
 ## git 链接 github 步骤：
 
     1.创建 SSH Key: ` ssh-keygen -t rsa -C "email" ` 生成公私密钥
