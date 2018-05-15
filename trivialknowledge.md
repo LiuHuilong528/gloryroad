@@ -692,7 +692,13 @@ mvn archetype:generate \
 </update>
 ```
 
-
+# POSTMAN
+安装：
+- `https://www.crx4chrome.com/extensions/` 下载插件
+- `aicmkgpgakddgnaphhhpliifpcfhicfo-0.2.20-Crx4Chrome.com.crx` 和 `fhbjgbiflinjbdggehcddcbncdddomop-4.10.3-Crx4Chrome.com.crx`
+- 解压下载的文件修改 `_metadata` 为 `metadata` 
+- 先安装 postman interceptor ，查看id
+- 修改postman文件中的 `request.js` 和 `runner.js` ，将其中的 `window.postman_interceptor_id` 改为之前记住的实际ID 
 
 
 
