@@ -608,6 +608,55 @@ mvn archetype:generate \
 
 
 
+# Mybatis
+## `#` 和 `$` 的区别
+`#` 会被当成占位符，进行预编译,将传入的值自动加上 `""`，能有效的预防sql注入 ；`$` 中的变量会当成字符串直接显示生成在sql中，会存在sql注入。
+
+## insert 标签
+
+``` xml
+<!-- 插入前生产ID -->
+<insert id="insertAuthor">
+  <selectKey keyProperty="id" resultType="int" order="BEFORE">
+    select CAST(RANDOM()*1000000 as INTEGER) a from SYSIBM.SYSDUMMY1
+  </selectKey>
+  insert into Author
+    (id, username, password, email,bio, favourite_section)
+  values
+    (#{id}, #{username}, #{password}, #{email}, #{bio}, #{favouriteSection,jdbcType=VARCHAR})
+</insert>
+
+<!-- 批量插入 -->
+<insert id="batchInsertUsers" parameterType="java.util.List">  
+    insert into mhc_user(userName,password) values  
+    <foreach collection="list" item="item" index="index" separator=",">  
+        (#{item.userName},#{item.password})  
+    </foreach>  
+</insert> 
+
+```
+
+## sql 标签
+
+``` xml
+<sql id="userColumns"> ${alias}.id,${alias}.username,${alias}.password </sql>
+
+<select id="selectUsers" resultType="map">
+  select
+    <include refid="userColumns"><property name="alias" value="t1"/></include>,
+    <!-- 会被解析为 t.id ... -->
+    <include refid="userColumns"><property name="alias" value="t2"/></include>
+  from some_table t1
+    cross join some_table t2
+</select>
+```
+
+## 参数
+
+`#{property,javaType=int,jdbcType=NUMERIC}` `javaType` 是java 的类型，`jdbcType` 是数据库类型；
+
+**在插入时，如果一个列允许为空，并可能传入空值进来则必须指定 `jdbcType` 类型**
+
 
 
 
