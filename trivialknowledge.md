@@ -692,6 +692,45 @@ mvn archetype:generate \
 </update>
 ```
 
+## Mybatis 高级映射
+T_users T_role T_users_role 三表：用户和角色是多对多，一个sql 获取用户和用户的角色信息;
+
+```sql
+create table T_users(user_id varchar2(10),user_name varchar2(10));
+create table T_role(role_id varchar2(10),role_name varchar2(10));
+create table T_users_role(user_id varchar2(10),role_id varchar2(10));
+```
+
+```java
+class Users{
+  String userId;
+  String userName;
+  List<Role> roles;
+}
+
+class Role {
+  String roleId;
+  String roleName;
+}
+
+```
+
+```xml
+<resultMap id="userRoleMap" type="Users">
+	<id column="user_id" property="userId" jdbcType="varchar"/>
+	<result column="user_name" property="userName" jdbcType="varchar"/>
+	<!-- **column 中填的是主外键（T_USERS）** -->
+	<collection property="roles" ofType="Role" column=""user_id" columnPrefix="r_">
+		<id column="role_id" property="roleId"/>
+		<result column="role_name" property="roleName"/>
+	</collection>
+</resultMap>
+<select id="selectUsersWithRole" resultMap="userRoleMap" parameterType="User">
+	select u.user_id as "user_id",u.user_name as "user_name",r.role_id as "r_role_id",r.role_name as "role_name" from t_users u join T_users_role ur on u.user_id= ur.user_id join t_role r on r.role_id = ur.role_id	
+</select>
+```
+这样查出来的 Use中会有个Role的List
+
 # POSTMAN
 安装：
 - `https://www.crx4chrome.com/extensions/` 下载插件
