@@ -24,6 +24,15 @@ java后台：
   `0`  -> a b   
   `-1` -> a b
 
+### `@Deprecated`
+```java
+/**
+ *@deprecated user {@link SomeClass.method(string)} instead
+ **/
+ @Deprecated
+ public void isDeprecatedMethod(String a){}
+```
+
 
 ### java8 时间和日期-API
 * `ZoneId` ： 时区ID，用来确定Instant和LocalDateTime互相转换的规则
@@ -756,4 +765,4 @@ class Role {
 
 
 
-3
+# 3
