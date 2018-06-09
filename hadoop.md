@@ -22,7 +22,7 @@ bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.0.0.jar grep i
 cat output/*
 ```
 
-### 伪集群 
+### 伪集群
 
 
 
