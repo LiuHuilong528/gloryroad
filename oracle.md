@@ -358,6 +358,23 @@ begin
   insert into my_emp_bak values(:old.id, :old.name, :old.sal);
 end;
 ```
+### Procedure PL/SQL的调试
+
+1. 找到需要调试的`procedure`
+2. 右击选择 **添加调试信息**
+3. 找到需要调试的 函数 右击选择 test
+
+```sql
+begin
+  -- Call the procedure
+  pkg_name.procedure_name(
+    i_input_param => i_input_value,
+    o_output_value => o_output_value
+  );
+end;
+```
+
+
 ### SQL 函数
 decode-
 
@@ -373,3 +390,4 @@ create  table   A0  as select * from  A; -- 备份
 delete from A;
 insert into A select * from A0;
 ```
+
