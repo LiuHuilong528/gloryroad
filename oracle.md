@@ -391,3 +391,30 @@ delete from A;
 insert into A select * from A0;
 ```
 
+--查询锁
+```sql
+select t2.username,
+       t2.sid,
+       t2.serial#,
+       t3.object_name,
+       t2.osuer,
+       t2.machine,
+       t2.program,
+       t2.login_time,
+       t2.command,
+       t2.lockwait,
+       t2.saddr,
+       t2.paddr,
+       t2.taddr,
+       t2.sql_address,
+       t1.locked_mode
+    from v$locked_object t1, v$session t2, dba_objects t3
+   where t1.session_id = t2.sid
+     and t.object_id = t3.object_id
+  order by t2.login_time;   
+``
+
+杀锁的进程
+```sql
+alter system kill session 'sid,serial#';
+```
